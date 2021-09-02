@@ -1,0 +1,65 @@
+Minesweeper task list
+    Milestones
+    - Try to get small board working (10x8 with 10 mines)
+    - allow for different modes
+    - make it a web component
+    - make it two player
+
+    Steps:
+    - add to github???
+    - right click adds a flag
+    - 
+    - Clicking on <quit> shows a white flag :)
+
+    - Hovering over a cell gives it some special effect
+    - Fancy up the cells!
+    
+
+History:
+
+    August 29th 2021
+        - Game over if you click on a mine
+        - Create a retry button
+        - Create a quit button!
+        - Clicking on <retry> will restart the game
+        - [figure out more tasks!!!]
+    August 24th 2021
+        - removed listeners on clear....
+        - removee children on clear
+        - set background color
+        
+    August 23rd 2021:
+        - moved all cells to a container...
+        - game over on mine click ... 
+            X reset the game / board = not necessary can be reset when the game starts again...
+            * remove listeners on the cells
+            * remove all the cells from the stage
+            
+            * show some notification saying that you lost 
+            * give an option to replay ...
+
+
+    August 17th 2021:
+        - refactored so that our pointer behavior is seperate from our sprite creation...
+
+    August 16th 2021:
+        - Island if you click on a zero!
+
+    August 15th 2021:
+        - find value at cell
+        - Can't click again on a tile once you've clicked on it.
+        - Clicking on cell shows symbol there (0-n, *)
+
+
+    August 14th 2021.
+        - Draw a board with the unknown tiles...
+        - Determine cell column/row on click
+        - Clicking on cell shows symbol there (0-n, *) (console.log)
+
+    August 12th 2021:
+        - Added support for loading multiple textures*
+        - new textures
+
+    Earlier:
+        - rewrote getIslandCode (no longer returns undefined cells, seraches diagonally...)
+        - was able to import minesweeper.js as a module into app.js
