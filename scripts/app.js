@@ -58,6 +58,11 @@ const app = new PIXI.Application({
 // can then insert into the DOM
 document.body.appendChild(app.view);
 
+// Disable right click context menu
+app.view.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
+
 /**
  * Functions
  */
@@ -87,6 +92,10 @@ function resetCellLayer(cellLayer) {
 function showCell(blob) {
     blob.clicked = true; // Set clicked to true.
     
+    // Hide any flags...
+    blob.flagged = false;
+    blob.flagSprite.visible = false;
+
     const cell = blob.clickableSprite;
     // Cell can no longer be clicked: disable interactivity and click handling  
     cell.off('pointerdown', handleCellClick);
@@ -133,13 +142,14 @@ function handleCellLeftClick(blob) {
 
 function handleCellRightClick(blob) {
     console.log('bruuuuuu you clicked ont da right');
+    blob.flagged = !blob.flagged;
+    blob.flagSprite.visible = blob.flagged;
 }
 
 function handleCellClick(event) {
 
     // Clicked Sprite:
     const sprite = event.target;
-    console.log(event.target);
 
     // Retrieve our blob:
     const blob = blobMap.get(sprite);
@@ -160,7 +170,6 @@ function handleCellClick(event) {
     } else if (clickType == 3) {
         handleCellRightClick(blob); // Right Click
     }
-    console.log(event);
 }
  /**
   * Performs setup for the game
@@ -210,16 +219,27 @@ function handleCellClick(event) {
             // Create content cell:
             let text = game.board.grid[y][x];
             const contentCell = new PIXI.Text(text);
-            contentCell.visible = false; // we will show it when necessary
+            contentCell.visible = false;
             contentCell.width = cell_length_px;
             contentCell.height = cell_length_px;                
             contentCell.anchor.x = 0;
             contentCell.anchor.y = 0;
             contentCell.x = x * cell_length_px;
             contentCell.y = y * cell_length_px;
+
+            // Create Flag cell:
+            text = 'F';
+            const flagCell = new PIXI.Text(text);
+            flagCell.visible = false;
+            flagCell.width = cell_length_px;
+            flagCell.height = cell_length_px;                
+            flagCell.anchor.x = 0;
+            flagCell.anchor.y = 0;
+            flagCell.x = x * cell_length_px;
+            flagCell.y = y * cell_length_px;
             
             // Save cell to blobMap
-            blobMap.set(cell, new SpriteBlob(cell, contentCell, y, x));
+            blobMap.set(cell, new SpriteBlob(cell, contentCell, flagCell, y, x));
 
             // Handle clicks:
             cell.on('pointerdown', handleCellClick);
@@ -227,6 +247,7 @@ function handleCellClick(event) {
             // Add the cell to the scene we are building
             cellLayer.addChild(cell);
             cellLayer.addChild(contentCell);
+            cellLayer.addChild(flagCell);
         }
     }
 }

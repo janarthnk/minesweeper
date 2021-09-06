@@ -20,8 +20,11 @@ History:
         - first we have to register
         - made a blob class that stories associated data
         - create content cells at the beginning.
-        - refactored so that we can handle right clicks     
-        
+        - refactored so that we can handle right clicks
+
+        - can show and hide flags
+        - disabled context menu
+
     Sept 1st 2021
         - figured out that event.data.originalEvent.which 
             = 3 for right click

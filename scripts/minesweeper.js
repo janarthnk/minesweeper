@@ -184,9 +184,10 @@ export class GameFactory {
  * SpriteBlob is a convenience class which stores information we need
  */
 export class SpriteBlob {
-    constructor(sprite, content, r, c) {
+    constructor(sprite, content, flag, r, c) {
         this.clickableSprite = sprite; // sprite which is clicked to display content
         this.contentSprite = content; // 
+        this.flagSprite = flag;
         this.row = r;
         this.column = c;
         this.clicked = false;
