@@ -1,3 +1,8 @@
+
+/**
+ * The Board class represents the minesweeper board and holds the contents of all cells.
+ * It's `stateless` in the sense that it only holds the values of the cells and dimensions of the board.
+ */
 export class Board {
     constructor(w, h, n) {        
         if (w < 1 || h < 1 || n < 1) throw new Error(`invalid args`);
@@ -164,6 +169,7 @@ export class Game {
                 return { res: ClickResult.NUMBER, data: v };
         }
     }
+    
 }
 
 export class GameFactory {
@@ -171,5 +177,19 @@ export class GameFactory {
         let board = new Board(w, h, numMines);
         let game = new Game(board);
         return game;
+    }
+}
+
+/**
+ * SpriteBlob is a convenience class which stores information we need
+ */
+export class SpriteBlob {
+    constructor(sprite, content, r, c) {
+        this.clickableSprite = sprite; // sprite which is clicked to display content
+        this.contentSprite = content; // 
+        this.row = r;
+        this.column = c;
+        this.clicked = false;
+        this.flagged = false;
     }
 }

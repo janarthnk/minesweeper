@@ -6,17 +6,29 @@ Minesweeper task list
     - make it two player
 
     Steps:
-    - add to github???
     - right click adds a flag
     - 
     - Clicking on <quit> shows a white flag :)
-
+    - push to remote repo
     - Hovering over a cell gives it some special effect
     - Fancy up the cells!
     
 
 History:
+    Sept 6th 2021
+        - trying to fix structure so we allow a single left click and any number of rc...
+        - first we have to register
+        - made a blob class that stories associated data
+        - create content cells at the beginning.
+        - refactored so that we can handle right clicks     
+        
+    Sept 1st 2021
+        - figured out that event.data.originalEvent.which 
+            = 3 for right click
+            = 1 for left click
 
+
+        - initial git commit
     August 29th 2021
         - Game over if you click on a mine
         - Create a retry button

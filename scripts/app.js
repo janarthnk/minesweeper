@@ -5,7 +5,7 @@
  *      - remove all those dumb console messages:
  */
 
-import {Board, ClickResult, Game, GameFactory} from './minesweeper.js'
+import {Board, ClickResult, Game, GameFactory, SpriteBlob} from './minesweeper.js'
 
 /**
  * Constants
@@ -20,6 +20,8 @@ const cell_length_px = 50;
 
 const app_width = cell_length_px * board_width;
 const app_height = cell_length_px * board_height;
+
+const blobMap = new Map();
 
 /**
  * Game Globals:
@@ -79,22 +81,106 @@ function resetCellLayer(cellLayer) {
     cellLayer.visible = true;
 }
 
+/**
+ * Show the cell content, mark the cell as clicked, stop listening for click events on it...
+ */
+function showCell(blob) {
+    blob.clicked = true; // Set clicked to true.
+    
+    const cell = blob.clickableSprite;
+    // Cell can no longer be clicked: disable interactivity and click handling  
+    cell.off('pointerdown', handleCellClick);
+    cell.interactive = false;
+    cell.buttonMode = false;
+
+    blob.contentSprite.visible = true;
+}
+
+function handleCellLeftClick(blob) {
+    
+    if (blob.clicked) return; // Already clicked peace out:
+    if (blob.flagged) return; // If it's flagged it cannot be clicked
+
+    showCell(blob);
+
+    // Store click result:
+    const y = blob.row;
+    const x = blob.column;
+    const clickReturn = game.click(y, x);
+    const res = clickReturn.res;
+    const data = clickReturn.data;
+
+    // Handle Click Type:
+    if ( res === ClickResult.MINE ) {
+        // Game over:
+        setTimeout(() => {
+            resetCellLayer(cellLayer);
+            const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
+            gameOverLossContainer.visible = true;
+        });
+    } else if ( res === ClickResult.ZERO ) {
+        // Emit a click for each cell in the island
+        const coordToClick = data;
+        coordToClick.forEach(coordSet => {
+            const row = coordSet[0];
+            const col = coordSet[1];
+            const cell = spriteMap[row][col];
+            const cellBlob = blobMap.get(cell);
+            showCell(cellBlob); 
+        });
+    }
+}
+
+function handleCellRightClick(blob) {
+    console.log('bruuuuuu you clicked ont da right');
+}
+
+function handleCellClick(event) {
+
+    // Clicked Sprite:
+    const sprite = event.target;
+    console.log(event.target);
+
+    // Retrieve our blob:
+    const blob = blobMap.get(sprite);
+    if (!blob) {
+        console.error(`Could not resolve blob for sprite!`);
+        return;
+    }
+
+    // Determine clicked row / col
+    const row = blob.row;
+    const col = blob.column;
+    console.log(`row: ${row}, col ${col}`);
+
+    // Determine left or right click:
+    const clickType = event.data.originalEvent.which;    
+    if (clickType == 1) {
+        handleCellLeftClick(blob); // Left Click
+    } else if (clickType == 3) {
+        handleCellRightClick(blob); // Right Click
+    }
+    console.log(event);
+}
  /**
   * Performs setup for the game
   */
  function startGame() {
-
+    
     // Start the game (via the game object)
     game.start();
 
     // Alias for pixi resources
     const resources = pixiResources;
 
+    // Clear blob map
+    blobMap.clear();
+
     const cellLayer = app.stage.getChildByName('cellLayer');
 
     // Create Cell Sprites:
     for (let y = 0; y < board_height; y++) {
-        spriteMap[y] = {};
+        spriteMap[y] = {}; // todo remove
         for (let x = 0; x < board_width; x++) {
 
             const texture = (x + y) % 2 === 0 ? resources.light_blue.texture : resources.dark_blue.texture;
@@ -121,83 +207,26 @@ function resetCellLayer(cellLayer) {
             // Shows hand cursor
             cell.buttonMode = true;
 
+            // Create content cell:
+            let text = game.board.grid[y][x];
+            const contentCell = new PIXI.Text(text);
+            contentCell.visible = false; // we will show it when necessary
+            contentCell.width = cell_length_px;
+            contentCell.height = cell_length_px;                
+            contentCell.anchor.x = 0;
+            contentCell.anchor.y = 0;
+            contentCell.x = x * cell_length_px;
+            contentCell.y = y * cell_length_px;
+            
+            // Save cell to blobMap
+            blobMap.set(cell, new SpriteBlob(cell, contentCell, y, x));
+
+            // Handle clicks:
+            cell.on('pointerdown', handleCellClick);
+
             // Add the cell to the scene we are building
             cellLayer.addChild(cell);
-    
-        }
-    }
-
-
-    // Add Click Listeners on each sprite:
-    for (let y = 0; y < board_height; y++) {
-        for (let x = 0; x < board_width; x++) {
-            const cell = spriteMap[y][x];
-
-            cell.once('pointerdown', () => {
-
-                // Store click result:
-                const clickReturn = game.click(y, x);
-                const res = clickReturn.res;
-                const data = clickReturn.data;
-
-                // Debug block:
-                if (debug_mode) {
-                    switch (res) {
-                        case ClickResult.MINE:
-                            console.log(`Hit a MINE on row ${y} on column ${x}!`);
-                            break;
-                        case ClickResult.NUMBER:
-                            console.log(`Hit a Number ${data} ${y} on column ${x}!`);
-                            break;
-                        case ClickResult.ZERO:
-                            console.log(`Hit an island on row ${y} on column ${x}! Cells`);
-                            console.log(data);
-                    }
-                }
-
-                if ( res === ClickResult.MINE ) {
-                    // Game over:
-                    setTimeout(() => {
-                        resetCellLayer(cellLayer);
-                        const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
-                        gameOverLossContainer.visible = true;
-                    });
-
-                } else if ( res === ClickResult.ZERO ) {
-                    // Emit a click for each cell in the island
-                    const coordToClick = data;
-                    coordToClick.forEach(coordSet => {
-                        const row = coordSet[0];
-                        const col = coordSet[1];
-                        spriteMap[row][col].emit('pointerdown');
-                    });
-                    let text = '0'; 
-                    const clickedCell = new PIXI.Text(text);
-                    clickedCell.width = cell_length_px;
-                    clickedCell.height = cell_length_px;                
-                    clickedCell.anchor.x = 0;
-                    clickedCell.anchor.y = 0;
-                    clickedCell.x = x * cell_length_px;
-                    clickedCell.y = y * cell_length_px;
-                    cellLayer.addChild(clickedCell);
-                } else {
-                    let text = data || '*'; // it's a number or it's a mine.
-                    const clickedCell = new PIXI.Text(text);
-                    clickedCell.width = cell_length_px;
-                    clickedCell.height = cell_length_px;                
-                    clickedCell.anchor.x = 0;
-                    clickedCell.anchor.y = 0;
-                    clickedCell.x = x * cell_length_px;
-                    clickedCell.y = y * cell_length_px;
-                    cellLayer.addChild(clickedCell);
-                    console.log('Added our symbol!!!');
-                }
-
-                // Disable interactivity and click handling                
-                cell.interactive = false;
-                cell.buttonMode = false;
-            });
-
+            cellLayer.addChild(contentCell);
         }
     }
 }
