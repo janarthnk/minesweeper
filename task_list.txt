@@ -5,16 +5,15 @@ Minesweeper task list
     - make it a web component
     - make it two player
 
-    Steps:
-    - right click adds a flag
-    - 
-    - Clicking on <quit> shows a white flag :)
-    - push to remote repo
-    - Hovering over a cell gives it some special effect
-    - Fancy up the cells!
-    
+Task list:
 
-History:
+    - Improve Sprites
+    - Add contact/info page
+    - Add surrender Page
+
+    Sept 7th 2021
+        Win detecting complete!!!!
+        display win dialog
     Sept 6th 2021
         - trying to fix structure so we allow a single left click and any number of rc...
         - first we have to register

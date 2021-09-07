@@ -35,7 +35,8 @@ const textureNameToPath = {
     'dark_blue': './assets/dark-blue-cell.png',
     'game_over_loss_banner': './assets/game-over-loss-banner.png',
     'retry': './assets/retry.png',
-    'quit': './assets/quit.png'
+    'quit': './assets/quit.png',
+    'victory_banner': './assets/victory-banner.png'
 }
 
 // Create game class:
@@ -66,12 +67,17 @@ app.view.addEventListener('contextmenu', (e) => {
 /**
  * Functions
  */
-
+function showVictory() {
+    console.log(`Congrats you won!`);
+    resetCellLayer();
+    const gameOverWinContainer = app.stage.getChildByName('gameOverWin');
+    gameOverWinContainer.visible = true;
+}
 /**
  * Resets the cell layer by cleaning up the sprites and all listeners.
  */
-function resetCellLayer(cellLayer) {
-    console.log("Game over my son!!!");
+function resetCellLayer() {
+    const cellLayer = app.stage.getChildByName('cellLayer');
 
     // Clearing 
     cellLayer.visible = false;
@@ -90,12 +96,16 @@ function resetCellLayer(cellLayer) {
  * Show the cell content, mark the cell as clicked, stop listening for click events on it...
  */
 function showCell(blob) {
+    if (blob.clicked) return; // already clicked
+
     blob.clicked = true; // Set clicked to true.
-    
+    game.numClicked++;
+
     // Hide any flags...
+    if (blob.flagged) game.numFlagged--;
     blob.flagged = false;
     blob.flagSprite.visible = false;
-
+    
     const cell = blob.clickableSprite;
     // Cell can no longer be clicked: disable interactivity and click handling  
     cell.off('pointerdown', handleCellClick);
@@ -123,7 +133,7 @@ function handleCellLeftClick(blob) {
     if ( res === ClickResult.MINE ) {
         // Game over:
         setTimeout(() => {
-            resetCellLayer(cellLayer);
+            resetCellLayer();
             const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
             gameOverLossContainer.visible = true;
         });
@@ -141,7 +151,7 @@ function handleCellLeftClick(blob) {
 }
 
 function handleCellRightClick(blob) {
-    console.log('bruuuuuu you clicked ont da right');
+    blob.flagged ? game.numFlagged-- : game.numFlagged++;
     blob.flagged = !blob.flagged;
     blob.flagSprite.visible = blob.flagged;
 }
@@ -158,17 +168,17 @@ function handleCellClick(event) {
         return;
     }
 
-    // Determine clicked row / col
-    const row = blob.row;
-    const col = blob.column;
-    console.log(`row: ${row}, col ${col}`);
-
     // Determine left or right click:
     const clickType = event.data.originalEvent.which;    
     if (clickType == 1) {
         handleCellLeftClick(blob); // Left Click
     } else if (clickType == 3) {
         handleCellRightClick(blob); // Right Click
+    }
+
+    // Check if game is won
+    if (game.hasWon()) {
+        showVictory();
     }
 }
  /**
@@ -252,6 +262,56 @@ function handleCellClick(event) {
     }
 }
 
+/**
+ * Populate game victory screen:
+ */
+function populateGameOverWinContainer(resources, stage) {
+    const gameOverWin = stage.getChildByName('gameOverWin');
+    if (gameOverWin == null) {
+        console.error(`Couldn't resolve game over win container!`);
+        return;
+    }
+
+    // Game Over Win Container:
+    gameOverWin.visible = false;
+    gameOverWin.x = app_width / 2;
+    gameOverWin.y = app_height / 2;
+
+    const banner = new PIXI.Sprite(resources.victory_banner.texture);
+    banner.anchor.x = 0.5;
+    banner.anchor.y = 0.5;
+    // todo scale so that it doesn't overflow!
+    gameOverWin.addChild(banner);
+
+    // Add Retry Button
+    const retry = new PIXI.Sprite(resources.retry.texture);
+    retry.anchor.x = 0.5;
+    retry.anchor.y = 0.5;
+    retry.x = -100;
+    retry.y = 125;
+    retry.interactive = true;
+    retry.buttonMode = true;
+    retry.on('pointerdown', () => {
+        gameOverWin.visible = false; 
+        startGame();
+    });
+    gameOverWin.addChild(retry);
+
+    // Add Quit Button
+    const quit = new PIXI.Sprite(resources.quit.texture);
+    quit.anchor.x = 0.5;
+    quit.anchor.y = 0.5;
+    quit.x = 100;
+    quit.y = 125;
+    quit.interactive = true;
+    quit.buttonMode = true;
+    quit.on('pointerdown', () => {
+        console.log(`show contact screen!`);
+        // todo:
+    });
+    gameOverWin.addChild(quit);
+}
+
  /**
  * Creates the 'Game Over Loss' container and all children!
  * @param {*} resources 
@@ -284,7 +344,6 @@ function populateGameOverLossContainer(resources, stage) {
     retry.interactive = true;
     retry.buttonMode = true;
     retry.on('pointerdown', () => {
-        console.log(`lmao it's not implemented yet hahaha noooooooooooobeeeeeee`);
         gameOverLoss.visible = false; 
         startGame();
     });
@@ -299,7 +358,7 @@ function populateGameOverLossContainer(resources, stage) {
     quit.interactive = true;
     quit.buttonMode = true;
     quit.on('pointerdown', () => {
-        console.log(`lmao you gave up? Get out of my sight seriously.`);
+        // todo:
     });
     gameOverLoss.addChild(quit);
 }
@@ -317,13 +376,18 @@ const spriteMap = {};
 
 // Create Layer for Cells
 const cellLayer = new PIXI.Container();
-cellLayer.name = 'cellLayer'
+cellLayer.name = 'cellLayer';
 app.stage.addChild(cellLayer);
 
 // Create Game Over Loss Container:
 const gameOverLoss = new PIXI.Container();
-gameOverLoss.name = 'gameOverLoss'
+gameOverLoss.name = 'gameOverLoss';
 app.stage.addChild(gameOverLoss);
+
+// Create Game Over Win Container:
+const gameOverWin = new PIXI.Container();
+gameOverWin.name = 'gameOverWin';
+app.stage.addChild(gameOverWin);
 
 app.loader.load((loader, resources) => {
     // Save resources for use later:
@@ -331,6 +395,9 @@ app.loader.load((loader, resources) => {
 
     // Populate game over loss screen:
     populateGameOverLossContainer(resources, app.stage);
+
+    // Populate game victory screen:
+    populateGameOverWinContainer(resources, app.stage);
 
     // Start the game
     startGame();

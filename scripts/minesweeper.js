@@ -145,6 +145,8 @@ export const ClickResult = Object.freeze({"MINE": 0, "NUMBER": 1, "ZERO": 2});
 export class Game {
     constructor(board) {
         this.board = board;
+        this.numClicked = 0;
+        this.numFlagged = 0;
     }
 
     start() {
@@ -152,6 +154,10 @@ export class Game {
             console.error(`Board not set!`);
             return;
         }
+
+        // Reset counters:
+        this.numClicked = 0;
+        this.numFlagged = 0;
 
         // Generate the board:
         this.board.generate();
@@ -168,6 +174,15 @@ export class Game {
             default:
                 return { res: ClickResult.NUMBER, data: v };
         }
+    }
+
+    /**
+     * Returns boolean indicating if the game has been won
+     */
+    hasWon() {
+        const numMines = this.board.mines;
+        const numNonMines = (this.board.width * this.board.height) - numMines;
+        return this.numClicked === numNonMines && this.numFlagged === numMines;
     }
     
 }
