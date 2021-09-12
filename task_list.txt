@@ -1,17 +1,36 @@
 Minesweeper task list
-    Milestones
-    - Try to get small board working (10x8 with 10 mines)
-    - allow for different modes
-    - make it a web component
-    - make it two player
+    Remaining Tasks:
+        Single Player                   37 hrs
+            Remaining Cell Icons        2 hr
+            Water cells                 2 hrs
+            Flag Sprite                 1 hr 
+            Curvy Border                7 hr
+            Time Counter                2 hr
+            Flag Counter                2 hr 
+            You Lose Banner             4 hr
+            You win Banner              4 hr
+            Quit Button                 2 hr 
+            Retry button                2 hr
+            Surrender Banner            2 hr 
+            Contact Banner              2 hr 
+            How to play                 4 hr 
+            Choose size (small/med/large)  4 hr 
 
-Task list:
+        How long can you work for ?
+            On a weekend? 6 hours
+            On a weekday? 1 hour
 
-    - Improve Sprites
-    - Add contact/info page
-    - Add surrender Page
+        Deadline (for single player)
+            September 26th 2021
+        
+        Reward:
+            Celestron - AstroMaster 70AZ Telescope - Refractor Telescope - Fully Coated Glass Optics
+        
+        Early bird reward: (1 week in advance, on or before Sept 19th 2021)
+            $100 stationary 
 
     Sept 7th 2021
+        started work on improving number cell + zero cell
         Win detecting complete!!!!
         display win dialog
     Sept 6th 2021

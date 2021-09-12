@@ -36,7 +36,25 @@ const textureNameToPath = {
     'game_over_loss_banner': './assets/game-over-loss-banner.png',
     'retry': './assets/retry.png',
     'quit': './assets/quit.png',
-    'victory_banner': './assets/victory-banner.png'
+    'victory_banner': './assets/victory-banner.png',
+    'cell_0_light': './assets/amber/light.png',
+    'cell_1_light':  './assets/amber/1_light.png',
+    'cell_2_light':  './assets/cells/2_light.png',
+    'cell_3_light':  './assets/cells/3_light.png',
+    'cell_4_light':  './assets/cells/4_light.png',
+    'cell_5_light':  './assets/cells/5_light.png',
+    'cell_6_light':  './assets/cells/6_light.png',
+    'cell_7_light':  './assets/cells/7_light.png',
+    'cell_8_light':  './assets/cells/8_light.png',
+    'cell_0_dark': './assets/amber/dark.png',
+    'cell_1_dark':  './assets/amber/1_dark.png',
+    'cell_2_dark':  './assets/cells/2_dark.png',
+    'cell_3_dark':  './assets/cells/3_dark.png',
+    'cell_4_dark':  './assets/cells/4_dark.png',
+    'cell_5_dark':  './assets/cells/5_dark.png',
+    'cell_6_dark':  './assets/cells/6_dark.png',
+    'cell_7_dark':  './assets/cells/7_dark.png',
+    'cell_8_dark':  './assets/cells/8_dark.png',
 }
 
 // Create game class:
@@ -227,8 +245,16 @@ function handleCellClick(event) {
             cell.buttonMode = true;
 
             // Create content cell:
+            let contentCell;
             let text = game.board.grid[y][x];
-            const contentCell = new PIXI.Text(text);
+            if (text !== '*') {
+                const suffix = (x + y) % 2 === 0 ? 'light' : 'dark';
+                const cellTextureName = 'cell_' + text + '_' + suffix;
+                contentCell = new PIXI.Sprite(resources[cellTextureName].texture);
+            } else {
+                contentCell = new PIXI.Text(text);
+            }
+
             contentCell.visible = false;
             contentCell.width = cell_length_px;
             contentCell.height = cell_length_px;                
