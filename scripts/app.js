@@ -12,6 +12,11 @@ import {Board, ClickResult, Game, GameFactory, SpriteBlob} from './minesweeper.j
  */
 const debug_mode = true;
 
+/**
+ * Modes (w,h,m):
+ *  Easy (10, 8, 10)
+ *  Hard (24, 20, 99)
+ */
 const board_width = 10;
 const board_height = 8;
 const num_mines = 10;
@@ -31,30 +36,33 @@ let pixiResources;
 
 const textureNameToPath = {
     'unknown': './assets/unknown-cell.png',
-    'light_blue': './assets/light-blue-cell.png',
-    'dark_blue': './assets/dark-blue-cell.png',
+    'light_blue':'./assets/amber/unknown_light.png',
+    'dark_blue': './assets/amber/unknown_dark.png',
     'game_over_loss_banner': './assets/game-over-loss-banner.png',
     'retry': './assets/retry.png',
     'quit': './assets/quit.png',
+    'flag': './assets/amber/flag.png',
+    'flag_light': './assets/amber/flag_light.png',
+    'flag_dark': './assets/amber/flag_dark.png',
     'victory_banner': './assets/victory-banner.png',
     'cell_0_light': './assets/amber/light.png',
     'cell_1_light':  './assets/amber/1_light.png',
-    'cell_2_light':  './assets/cells/2_light.png',
-    'cell_3_light':  './assets/cells/3_light.png',
-    'cell_4_light':  './assets/cells/4_light.png',
-    'cell_5_light':  './assets/cells/5_light.png',
-    'cell_6_light':  './assets/cells/6_light.png',
-    'cell_7_light':  './assets/cells/7_light.png',
-    'cell_8_light':  './assets/cells/8_light.png',
+    'cell_2_light':  './assets/amber/2_light.png',
+    'cell_3_light':  './assets/amber/3_light.png',
+    'cell_4_light':  './assets/amber/4_light.png',
+    'cell_5_light':  './assets/amber/5_light.png',
+    'cell_6_light':  './assets/amber/6_light.png',
+    'cell_7_light':  './assets/amber/7_light.png',
+    'cell_8_light':  './assets/amber/8_light.png',
     'cell_0_dark': './assets/amber/dark.png',
     'cell_1_dark':  './assets/amber/1_dark.png',
-    'cell_2_dark':  './assets/cells/2_dark.png',
-    'cell_3_dark':  './assets/cells/3_dark.png',
-    'cell_4_dark':  './assets/cells/4_dark.png',
-    'cell_5_dark':  './assets/cells/5_dark.png',
-    'cell_6_dark':  './assets/cells/6_dark.png',
-    'cell_7_dark':  './assets/cells/7_dark.png',
-    'cell_8_dark':  './assets/cells/8_dark.png',
+    'cell_2_dark':  './assets/amber/2_dark.png',
+    'cell_3_dark':  './assets/amber/3_dark.png',
+    'cell_4_dark':  './assets/amber/4_dark.png',
+    'cell_5_dark':  './assets/amber/5_dark.png',
+    'cell_6_dark':  './assets/amber/6_dark.png',
+    'cell_7_dark':  './assets/amber/7_dark.png',
+    'cell_8_dark':  './assets/amber/8_dark.png',
 }
 
 // Create game class:
@@ -220,6 +228,7 @@ function handleCellClick(event) {
         spriteMap[y] = {}; // todo remove
         for (let x = 0; x < board_width; x++) {
 
+            const suffix = (x + y) % 2 === 0 ? 'light' : 'dark';
             const texture = (x + y) % 2 === 0 ? resources.light_blue.texture : resources.dark_blue.texture;
 
             const cell = new PIXI.Sprite(texture);
@@ -248,7 +257,7 @@ function handleCellClick(event) {
             let contentCell;
             let text = game.board.grid[y][x];
             if (text !== '*') {
-                const suffix = (x + y) % 2 === 0 ? 'light' : 'dark';
+                
                 const cellTextureName = 'cell_' + text + '_' + suffix;
                 contentCell = new PIXI.Sprite(resources[cellTextureName].texture);
             } else {
@@ -264,8 +273,8 @@ function handleCellClick(event) {
             contentCell.y = y * cell_length_px;
 
             // Create Flag cell:
-            text = 'F';
-            const flagCell = new PIXI.Text(text);
+            //const flagCell = new PIXI.Text(text);
+            const flagCell = new PIXI.Sprite(resources['flag' + '_' + suffix].texture);
             flagCell.visible = false;
             flagCell.width = cell_length_px;
             flagCell.height = cell_length_px;                

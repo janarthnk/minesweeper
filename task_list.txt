@@ -1,9 +1,9 @@
 Minesweeper task list
     Remaining Tasks:
         Single Player                   37 hrs
-            Remaining Cell Icons        2 hr
-            Water cells                 2 hrs
-            Flag Sprite                 1 hr 
+            Remaining Cell Icons        2 hr            1.25 hr
+            Water cells                 2 hrs           1 hr
+            Flag Sprite                 1 hr            3 hrs
             Curvy Border                7 hr
             Time Counter                2 hr
             Flag Counter                2 hr 

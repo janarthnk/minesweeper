@@ -12,13 +12,13 @@
    viewBox="0 0 50 50"
    version="1.1"
    id="SVGRoot"
-   sodipodi:docname="1_dark.svg"
+   sodipodi:docname="7_dark.svg"
    inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
-   inkscape:export-filename="C:\Users\Janarth\Desktop\dev\javascript\minesweeper\assets\amber\1_dark.png"
+   inkscape:export-filename="C:\Users\Janarth\Desktop\dev\javascript\minesweeper\assets\amber\7_dark.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
-     id="defs5237" />
+     id="defs11262" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -26,20 +26,20 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="25.274029"
-     inkscape:cy="29.521498"
+     inkscape:zoom="11.2"
+     inkscape:cx="38.203431"
+     inkscape:cy="50.710141"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1624"
      inkscape:window-height="1228"
-     inkscape:window-x="4031"
-     inkscape:window-y="191"
+     inkscape:window-x="5006"
+     inkscape:window-y="278"
      inkscape:window-maximized="0" />
   <metadata
-     id="metadata5240">
+     id="metadata11265">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -59,22 +59,22 @@
        id="rect837"
        width="50"
        height="50"
-       x="1.3229166e-07"
-       y="1.3229166e-07"
+       x="5e-07"
+       y="5e-07"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:34.2934px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#00a7ff;fill-opacity:1;stroke-width:0.2572"
-       x="12.223877"
-       y="37.500023"
-       id="text3716-1-4"
+       style="font-weight:bold;font-size:34.3855px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#708090;fill-opacity:1;stroke:none;stroke-width:0.257927;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="12.583792"
+       y="37.500008"
+       id="text3716-1"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
-         id="tspan3714-1-0"
-         x="12.223877"
-         y="37.500023"
-         style="font-size:34.2934px;fill:#00a7ff;fill-opacity:1;stroke-width:0.2572">1</tspan></text>
+         id="tspan3714-1"
+         x="12.583792"
+         y="37.500008"
+         style="font-size:34.3855px;fill:#708090;fill-opacity:1;stroke:none;stroke-width:0.257927;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">7</tspan></text>
   </g>
 </svg>
