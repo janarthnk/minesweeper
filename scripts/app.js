@@ -22,6 +22,7 @@ const board_height = 8;
 const num_mines = 10;
 
 const cell_length_px = 50;
+const border_thickness_px = 5;
 
 const app_width = cell_length_px * board_width;
 const app_height = cell_length_px * board_height;
@@ -39,6 +40,7 @@ const textureNameToPath = {
     'light_blue':'./assets/amber/unknown_light.png',
     'dark_blue': './assets/amber/unknown_dark.png',
     'game_over_loss_banner': './assets/game-over-loss-banner.png',
+    'border': './assets/amber/border.png',
     'retry': './assets/retry.png',
     'quit': './assets/quit.png',
     'flag': './assets/amber/flag.png',
@@ -164,7 +166,7 @@ function handleCellLeftClick(blob) {
             gameOverLossContainer.visible = true;
         });
     } else if ( res === ClickResult.ZERO ) {
-        // Emit a click for each cell in the island
+        // Show all cells on the island:
         const coordToClick = data;
         coordToClick.forEach(coordSet => {
             const row = coordSet[0];
@@ -172,6 +174,11 @@ function handleCellLeftClick(blob) {
             const cell = spriteMap[row][col];
             const cellBlob = blobMap.get(cell);
             showCell(cellBlob); 
+        });
+
+        // Update borders for each cell in the island
+        coordToClick.forEach(coordSet => {
+
         });
     }
 }
@@ -253,27 +260,63 @@ function handleCellClick(event) {
             // Shows hand cursor
             cell.buttonMode = true;
 
+            // Content container has everything necessary to display the cell (eg: number, background, borders): 
+            const content = new PIXI.Container();
+            content.visible = false;
+            content.x = x * cell_length_px;
+            content.y = y * cell_length_px;
+
             // Create content cell:
             let contentCell;
             let text = game.board.grid[y][x];
             if (text !== '*') {
-                
                 const cellTextureName = 'cell_' + text + '_' + suffix;
                 contentCell = new PIXI.Sprite(resources[cellTextureName].texture);
             } else {
                 contentCell = new PIXI.Text(text);
             }
-
-            contentCell.visible = false;
             contentCell.width = cell_length_px;
             contentCell.height = cell_length_px;                
-            contentCell.anchor.x = 0;
-            contentCell.anchor.y = 0;
-            contentCell.x = x * cell_length_px;
-            contentCell.y = y * cell_length_px;
+            content.addChild(contentCell);
+            
+            // Top Border:
+            const topBorder = new PIXI.Sprite(resources['border'].texture);
+            topBorder.width = cell_length_px - (2 * border_thickness_px);
+            topBorder.height = border_thickness_px;
+            topBorder.x = border_thickness_px;
+            topBorder.y = 0;
+            topBorder.name = 'top';
+            content.addChild(topBorder);
+
+            // Bottom Border:
+            const bottomBorder = new PIXI.Sprite(resources['border'].texture);
+            bottomBorder.width = cell_length_px - (2 * border_thickness_px);
+            bottomBorder.height = border_thickness_px;
+            bottomBorder.x = border_thickness_px;
+            bottomBorder.y = cell_length_px - border_thickness_px;
+            bottomBorder.name = 'bottom';
+            content.addChild(bottomBorder);
+
+            // Right Border:
+            const rightBorder = new PIXI.Sprite(resources['border'].texture);
+            rightBorder.width = border_thickness_px;
+            rightBorder.height = cell_length_px - (2 * border_thickness_px);
+            rightBorder.x = cell_length_px - border_thickness_px;
+            rightBorder.y = border_thickness_px;
+            rightBorder.name = 'right';
+            content.addChild(rightBorder);
+
+            // Left Border:
+            const leftBorder = new PIXI.Sprite(resources['border'].texture);
+            leftBorder.width = border_thickness_px;
+            leftBorder.height = cell_length_px - (2 * border_thickness_px);
+            leftBorder.x = 0;
+            leftBorder.y = border_thickness_px;
+            leftBorder.name = 'left';
+            content.addChild(leftBorder);
+
 
             // Create Flag cell:
-            //const flagCell = new PIXI.Text(text);
             const flagCell = new PIXI.Sprite(resources['flag' + '_' + suffix].texture);
             flagCell.visible = false;
             flagCell.width = cell_length_px;
@@ -283,15 +326,17 @@ function handleCellClick(event) {
             flagCell.x = x * cell_length_px;
             flagCell.y = y * cell_length_px;
             
+
+
             // Save cell to blobMap
-            blobMap.set(cell, new SpriteBlob(cell, contentCell, flagCell, y, x));
+            blobMap.set(cell, new SpriteBlob(cell, content, flagCell, y, x));
 
             // Handle clicks:
             cell.on('pointerdown', handleCellClick);
 
             // Add the cell to the scene we are building
             cellLayer.addChild(cell);
-            cellLayer.addChild(contentCell);
+            cellLayer.addChild(content);
             cellLayer.addChild(flagCell);
         }
     }

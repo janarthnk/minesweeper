@@ -3,10 +3,12 @@ Minesweeper task list
         Single Player                   37 hrs
             Remaining Cell Icons        2 hr            1.25 hr
             Water cells                 2 hrs           1 hr
-            Flag Sprite                 1 hr            3 hrs
-            Curvy Border                7 hr
+            Flag Sprite                 1 hr            3 hr
+            Curvy Border                7 hr            
             Time Counter                2 hr
-            Flag Counter                2 hr 
+            Flag Counter                2 hr
+            Choose size (small/med/large)  4 hr 
+
             You Lose Banner             4 hr
             You win Banner              4 hr
             Quit Button                 2 hr 
@@ -14,7 +16,7 @@ Minesweeper task list
             Surrender Banner            2 hr 
             Contact Banner              2 hr 
             How to play                 4 hr 
-            Choose size (small/med/large)  4 hr 
+
 
         How long can you work for ?
             On a weekend? 6 hours

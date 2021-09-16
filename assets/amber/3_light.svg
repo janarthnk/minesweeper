@@ -46,7 +46,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -65,7 +65,7 @@
        inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:33.7286px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff6662;fill-opacity:1;stroke:none;stroke-width:0.253;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+       style="font-weight:bold;font-size:33.7286px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff5169;fill-opacity:1;stroke:none;stroke-width:0.253;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
        x="12.327218"
        y="37.500008"
        id="text3716-1"
@@ -75,6 +75,6 @@
          id="tspan3714-1"
          x="12.327218"
          y="37.500008"
-         style="font-size:33.7286px;fill:#ff6662;fill-opacity:1;stroke:none;stroke-width:0.253;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;">3</tspan></text>
+         style="font-size:33.7286px;fill:#ff5169;fill-opacity:1;stroke:none;stroke-width:0.253;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;">3</tspan></text>
   </g>
 </svg>
