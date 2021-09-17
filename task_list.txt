@@ -5,10 +5,10 @@ Minesweeper task list
             Water cells                 2 hrs           1 hr
             Flag Sprite                 1 hr            3 hr
 
-            GITHUB PLS
-            
-            Curvy Border                7 hr            
+            GITHUB PLS      
 
+            Curvy Border                7 hr            
+                make corner sprites mang...
             Time Counter                2 hr
             Flag Counter                2 hr
             Choose size (small/med/large)  4 hr 
@@ -38,7 +38,9 @@ Minesweeper task list
             $100 stationary 
     
 
-
+    Sept 16th 2021
+        - Wooo github hooray :D
+        - created corner sprite bro :DDDDD
     Sept 15th 2021
         - created wall borders (still need to do corners)
         - created dark flag hooray
