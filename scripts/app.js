@@ -41,6 +41,8 @@ const textureNameToPath = {
     'dark_blue': './assets/amber/unknown_dark.png',
     'game_over_loss_banner': './assets/game-over-loss-banner.png',
     'border': './assets/amber/border.png',
+    'corner_light' : './assets/amber/cornerLight.png',
+    'corner_dark' : './assets/amber/cornerDark.png',
     'retry': './assets/retry.png',
     'quit': './assets/quit.png',
     'flag': './assets/amber/flag.png',
@@ -315,6 +317,30 @@ function handleCellClick(event) {
             leftBorder.name = 'left';
             content.addChild(leftBorder);
 
+            // Top Left Corner (In / Out / Solid)
+            const topLeftInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            topLeftInCorner.width = border_thickness_px;
+            topLeftInCorner.height = border_thickness_px;
+            topLeftInCorner.name = 'topLeftIn';
+            topLeftInCorner.visible = true;
+            content.addChild(topLeftInCorner);
+
+            const topLeftOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            topLeftOutCorner.width = border_thickness_px;
+            topLeftOutCorner.height = border_thickness_px;
+            topLeftOutCorner.x = border_thickness_px;
+            topLeftOutCorner.y = border_thickness_px;
+            topLeftOutCorner.name = 'topLeftOut';
+            topLeftOutCorner.angle = 180;
+            topLeftOutCorner.visible = false;
+            content.addChild(topLeftOutCorner);
+
+            const topLeftSolidCorner = new PIXI.Sprite(resources['border'].texture);
+            topLeftSolidCorner.width = border_thickness_px;
+            topLeftSolidCorner.height = border_thickness_px;
+            topLeftSolidCorner.name = 'topLeftSolid';
+            topLeftSolidCorner.visible = false;
+            content.addChild(topLeftSolidCorner);
 
             // Create Flag cell:
             const flagCell = new PIXI.Sprite(resources['flag' + '_' + suffix].texture);
@@ -326,8 +352,6 @@ function handleCellClick(event) {
             flagCell.x = x * cell_length_px;
             flagCell.y = y * cell_length_px;
             
-
-
             // Save cell to blobMap
             blobMap.set(cell, new SpriteBlob(cell, content, flagCell, y, x));
 
