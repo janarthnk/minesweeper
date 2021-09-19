@@ -342,6 +342,91 @@ function handleCellClick(event) {
             topLeftSolidCorner.visible = false;
             content.addChild(topLeftSolidCorner);
 
+            // Top Right Corner (In / Out / Solid)
+            const topRightInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            topRightInCorner.width = border_thickness_px;
+            topRightInCorner.height = border_thickness_px;
+            topRightInCorner.angle = 90;
+            topRightInCorner.x = cell_length_px;
+            topRightInCorner.name = 'topRightIn';
+            topRightInCorner.visible = true;
+            content.addChild(topRightInCorner);
+
+            const topRightOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            topRightOutCorner.width = border_thickness_px;
+            topRightOutCorner.height = border_thickness_px;
+            topRightOutCorner.angle = -90;
+            topRightOutCorner.x = cell_length_px - border_thickness_px;
+            topRightOutCorner.y = border_thickness_px;
+            topRightOutCorner.name = 'topRightOut';
+            topRightOutCorner.visible = false;
+            content.addChild(topRightOutCorner);
+
+            const topRightSolidCorner = new PIXI.Sprite(resources['border'].texture);
+            topRightSolidCorner.width = border_thickness_px;
+            topRightSolidCorner.height = border_thickness_px;
+            topRightSolidCorner.x = cell_length_px - border_thickness_px;
+            topRightSolidCorner.name = 'topRightSolid';
+            topRightSolidCorner.visible = false;
+            content.addChild(topRightSolidCorner);
+
+            // Bottom Right Corner (In / Out / Solid)
+            const bottomRightInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            bottomRightInCorner.width = border_thickness_px;
+            bottomRightInCorner.height = border_thickness_px;
+            bottomRightInCorner.angle = 180;
+            bottomRightInCorner.x = cell_length_px;
+            bottomRightInCorner.y = cell_length_px;
+            bottomRightInCorner.name = 'bottomRightIn';
+            bottomRightInCorner.visible = true;
+            content.addChild(bottomRightInCorner);
+
+            const bottomRightOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            bottomRightOutCorner.width = border_thickness_px;
+            bottomRightOutCorner.height = border_thickness_px;
+            bottomRightOutCorner.x = cell_length_px - border_thickness_px;
+            bottomRightOutCorner.y = cell_length_px - border_thickness_px;
+            bottomRightOutCorner.name = 'bottomRightOut';
+            bottomRightOutCorner.visible = false;
+            content.addChild(bottomRightOutCorner);
+
+            const bottomRightSolidCorner = new PIXI.Sprite(resources['border'].texture);
+            bottomRightSolidCorner.width = border_thickness_px;
+            bottomRightSolidCorner.height = border_thickness_px;
+            bottomRightSolidCorner.x = cell_length_px - border_thickness_px;
+            bottomRightSolidCorner.y = cell_length_px - border_thickness_px;
+            bottomRightSolidCorner.name = 'bottomRightSolid';
+            bottomRightSolidCorner.visible = false;
+            content.addChild(bottomRightSolidCorner);
+
+            // Bottom Left Corner (In / Out / Solid)
+            const bottomLeftInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            bottomLeftInCorner.width = border_thickness_px;
+            bottomLeftInCorner.height = border_thickness_px;
+            bottomLeftInCorner.angle = -90;
+            bottomLeftInCorner.y = cell_length_px;
+            bottomLeftInCorner.name = 'bottomLeftIn';
+            bottomLeftInCorner.visible = true;
+            content.addChild(bottomLeftInCorner);
+
+            const bottomLeftOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            bottomLeftOutCorner.width = border_thickness_px;
+            bottomLeftOutCorner.height = border_thickness_px;
+            bottomLeftOutCorner.angle = 90;
+            bottomLeftOutCorner.x = border_thickness_px;
+            bottomLeftOutCorner.y = cell_length_px - border_thickness_px;
+            bottomLeftOutCorner.name = 'bottomLeftOut';
+            bottomLeftOutCorner.visible = false;
+            content.addChild(bottomLeftOutCorner);
+
+            const bottomLeftSolidCorner = new PIXI.Sprite(resources['border'].texture);
+            bottomLeftSolidCorner.width = border_thickness_px;
+            bottomLeftSolidCorner.height = border_thickness_px;
+            bottomLeftSolidCorner.y = cell_length_px - border_thickness_px;
+            bottomLeftSolidCorner.name = 'bottomLeftSolid';
+            bottomLeftSolidCorner.visible = false;
+            content.addChild(bottomLeftSolidCorner);
+
             // Create Flag cell:
             const flagCell = new PIXI.Sprite(resources['flag' + '_' + suffix].texture);
             flagCell.visible = false;
