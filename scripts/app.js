@@ -145,12 +145,88 @@ function showCell(blob) {
     blob.contentSprite.visible = true;
 }
 
+// Return null if col/row is out of bounds
+// Otherwise return blob at column and row.
+function getBlobAt(col, row) {
+    if (isOutOfBounds(col, row)) return null;
+    const cell = spriteMap[row][col];
+    return blobMap.get(cell);
+}
+
+function isOutOfBounds(col, row) {
+    return row < 0 || row >= board_height || col < 0 || col >= board_width;
+}
+
+// Returns false if given `row`, `col` are out of bounds.
+// Otherwise return if cell is clicked (since a clicked cell is shown).
+function isShown(col, row) {
+    // Out of bounds:
+    if (isOutOfBounds(col, row)) return false;
+    
+    // Check if content is visible:
+    const cell = spriteMap[row][col];
+    const blob = blobMap.get(cell);
+    return blob.clicked;
+
+}
+function updateCellBorder(blob) {
+    // Can't update border for unclicked cell
+    if (!blob.clicked) return; 
+
+    const x = blob.column;
+    const y = blob.row;
+
+    const content = blob.contentSprite;
+
+    // Get Side Border Children:
+    const top = content.getChildByName('top');
+    const bottom = content.getChildByName('bottom');
+    const right = content.getChildByName('right');
+    const left = content.getChildByName('left');
+
+    // Side Border Visibility:
+    top.visible = !isShown(x, y-1);
+    bottom.visible = !isShown(x, y+1);
+    right.visible = !isShown(x+1, y);
+    left.visible = !isShown(x-1, y);
+
+    // Corner Border Visibility:
+    content.getChildByName('topLeftIn').visible = top.visible && left.visible;
+    content.getChildByName('topLeftOut').visible = !top.visible && !left.visible && !isShown(x-1, y-1);
+    content.getChildByName('topLeftSolid').visible = (top.visible ^ left.visible);
+
+    content.getChildByName('topRightIn').visible = top.visible && right.visible;
+    content.getChildByName('topRightOut').visible = !top.visible && !right.visible && !isShown(x+1, y-1);
+    content.getChildByName('topRightSolid').visible = (top.visible ^ right.visible);
+
+    content.getChildByName('bottomRightIn').visible = bottom.visible && right.visible;
+    content.getChildByName('bottomRightOut').visible = !bottom.visible && !right.visible && !isShown(x+1, y+1);
+    content.getChildByName('bottomRightSolid').visible = (bottom.visible ^ right.visible);
+
+    content.getChildByName('bottomLeftIn').visible = bottom.visible && left.visible;
+    content.getChildByName('bottomLeftOut').visible = !bottom.visible && !left.visible && !isShown(x-1, y+1);
+    content.getChildByName('bottomLeftSolid').visible = (bottom.visible ^ left.visible);
+}
+
+// Given a blob returns all neighbor blobs!
+function neighbors(blob) {
+    const y = blob.row;
+    const x = blob.column;
+    const neighborCoords = [[x-1, y], [x-1, y-1], [x-1, y+1], [x, y-1], [x, y+1], [x+1, y], [x+1, y-1], [x+1, y+1]];
+    const validCoords = neighborCoords.filter(coords => !isOutOfBounds(coords[0], coords[1]));
+    return validCoords.map(coords => getBlobAt(coords[0], coords[1]));
+}
+
 function handleCellLeftClick(blob) {
     
     if (blob.clicked) return; // Already clicked peace out:
     if (blob.flagged) return; // If it's flagged it cannot be clicked
 
     showCell(blob);
+
+    // List of blobs whose border needs to be updated.
+    const borderUpdateSet = new Set();
+    borderUpdateSet.add(blob);
 
     // Store click result:
     const y = blob.row;
@@ -176,13 +252,17 @@ function handleCellLeftClick(blob) {
             const cell = spriteMap[row][col];
             const cellBlob = blobMap.get(cell);
             showCell(cellBlob); 
-        });
-
-        // Update borders for each cell in the island
-        coordToClick.forEach(coordSet => {
-
+            borderUpdateSet.add(cellBlob);
         });
     }
+
+    // Add neighbors to update list:
+    for (const blob of borderUpdateSet) {
+        neighbors(blob).forEach(n => borderUpdateSet.add(n));
+    }
+    
+    // Update Borders:
+    for (const blob of borderUpdateSet) updateCellBorder(blob);
 }
 
 function handleCellRightClick(blob) {
@@ -288,6 +368,7 @@ function handleCellClick(event) {
             topBorder.x = border_thickness_px;
             topBorder.y = 0;
             topBorder.name = 'top';
+            topBorder.visible = false;
             content.addChild(topBorder);
 
             // Bottom Border:
@@ -297,6 +378,7 @@ function handleCellClick(event) {
             bottomBorder.x = border_thickness_px;
             bottomBorder.y = cell_length_px - border_thickness_px;
             bottomBorder.name = 'bottom';
+            bottomBorder.visible = false;
             content.addChild(bottomBorder);
 
             // Right Border:
@@ -306,6 +388,7 @@ function handleCellClick(event) {
             rightBorder.x = cell_length_px - border_thickness_px;
             rightBorder.y = border_thickness_px;
             rightBorder.name = 'right';
+            rightBorder.visible = false;
             content.addChild(rightBorder);
 
             // Left Border:
@@ -315,6 +398,7 @@ function handleCellClick(event) {
             leftBorder.x = 0;
             leftBorder.y = border_thickness_px;
             leftBorder.name = 'left';
+            leftBorder.visible = false;
             content.addChild(leftBorder);
 
             // Top Left Corner (In / Out / Solid)
@@ -322,7 +406,7 @@ function handleCellClick(event) {
             topLeftInCorner.width = border_thickness_px;
             topLeftInCorner.height = border_thickness_px;
             topLeftInCorner.name = 'topLeftIn';
-            topLeftInCorner.visible = true;
+            topLeftInCorner.visible = false;
             content.addChild(topLeftInCorner);
 
             const topLeftOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
@@ -349,7 +433,7 @@ function handleCellClick(event) {
             topRightInCorner.angle = 90;
             topRightInCorner.x = cell_length_px;
             topRightInCorner.name = 'topRightIn';
-            topRightInCorner.visible = true;
+            topRightInCorner.visible = false;
             content.addChild(topRightInCorner);
 
             const topRightOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
@@ -378,7 +462,7 @@ function handleCellClick(event) {
             bottomRightInCorner.x = cell_length_px;
             bottomRightInCorner.y = cell_length_px;
             bottomRightInCorner.name = 'bottomRightIn';
-            bottomRightInCorner.visible = true;
+            bottomRightInCorner.visible = false;
             content.addChild(bottomRightInCorner);
 
             const bottomRightOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
@@ -406,7 +490,7 @@ function handleCellClick(event) {
             bottomLeftInCorner.angle = -90;
             bottomLeftInCorner.y = cell_length_px;
             bottomLeftInCorner.name = 'bottomLeftIn';
-            bottomLeftInCorner.visible = true;
+            bottomLeftInCorner.visible = false;
             content.addChild(bottomLeftInCorner);
 
             const bottomLeftOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
@@ -591,4 +675,3 @@ app.loader.load((loader, resources) => {
     // Start the game
     startGame();
 });
-

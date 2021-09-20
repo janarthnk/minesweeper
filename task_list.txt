@@ -4,9 +4,7 @@ Minesweeper task list
             Remaining Cell Icons        2 hr            1.25 hr
             Water cells                 2 hrs           1 hr
             Flag Sprite                 1 hr            3 hr
-
             GITHUB PLS      
-
             Curvy Border                7 hr            
                 make corner sprites mang...
             Time Counter                2 hr
