@@ -41,8 +41,10 @@ const textureNameToPath = {
     'dark_blue': './assets/amber/unknown_dark.png',
     'game_over_loss_banner': './assets/game-over-loss-banner.png',
     'border': './assets/amber/border.png',
-    'corner_light' : './assets/amber/cornerLight.png',
-    'corner_dark' : './assets/amber/cornerDark.png',
+    'corner_in_light' : './assets/amber/cornerInLight.png',
+    'corner_in_dark' : './assets/amber/cornerInDark.png',
+    'corner_out_light' : './assets/amber/cornerOutLight.png',
+    'corner_out_dark' : './assets/amber/cornerOutDark.png',
     'retry': './assets/retry.png',
     'quit': './assets/quit.png',
     'flag': './assets/amber/flag.png',
@@ -164,8 +166,8 @@ function isShown(col, row) {
     if (isOutOfBounds(col, row)) return false;
     
     // Check if content is visible:
-    const cell = spriteMap[row][col];
-    const blob = blobMap.get(cell);
+    const blob = getBlobAt(col, row);
+    
     return blob.clicked;
 
 }
@@ -249,8 +251,7 @@ function handleCellLeftClick(blob) {
         coordToClick.forEach(coordSet => {
             const row = coordSet[0];
             const col = coordSet[1];
-            const cell = spriteMap[row][col];
-            const cellBlob = blobMap.get(cell);
+            const cellBlob = getBlobAt(col, row);
             showCell(cellBlob); 
             borderUpdateSet.add(cellBlob);
         });
@@ -402,14 +403,14 @@ function handleCellClick(event) {
             content.addChild(leftBorder);
 
             // Top Left Corner (In / Out / Solid)
-            const topLeftInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const topLeftInCorner = new PIXI.Sprite(resources['corner_in_' + suffix].texture);
             topLeftInCorner.width = border_thickness_px;
             topLeftInCorner.height = border_thickness_px;
             topLeftInCorner.name = 'topLeftIn';
             topLeftInCorner.visible = false;
             content.addChild(topLeftInCorner);
 
-            const topLeftOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const topLeftOutCorner = new PIXI.Sprite(resources['corner_out_' + suffix].texture);
             topLeftOutCorner.width = border_thickness_px;
             topLeftOutCorner.height = border_thickness_px;
             topLeftOutCorner.x = border_thickness_px;
@@ -427,7 +428,7 @@ function handleCellClick(event) {
             content.addChild(topLeftSolidCorner);
 
             // Top Right Corner (In / Out / Solid)
-            const topRightInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const topRightInCorner = new PIXI.Sprite(resources['corner_in_' + suffix].texture);
             topRightInCorner.width = border_thickness_px;
             topRightInCorner.height = border_thickness_px;
             topRightInCorner.angle = 90;
@@ -436,7 +437,7 @@ function handleCellClick(event) {
             topRightInCorner.visible = false;
             content.addChild(topRightInCorner);
 
-            const topRightOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const topRightOutCorner = new PIXI.Sprite(resources['corner_out_' + suffix].texture);
             topRightOutCorner.width = border_thickness_px;
             topRightOutCorner.height = border_thickness_px;
             topRightOutCorner.angle = -90;
@@ -455,7 +456,7 @@ function handleCellClick(event) {
             content.addChild(topRightSolidCorner);
 
             // Bottom Right Corner (In / Out / Solid)
-            const bottomRightInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const bottomRightInCorner = new PIXI.Sprite(resources['corner_in_' + suffix].texture);
             bottomRightInCorner.width = border_thickness_px;
             bottomRightInCorner.height = border_thickness_px;
             bottomRightInCorner.angle = 180;
@@ -465,7 +466,7 @@ function handleCellClick(event) {
             bottomRightInCorner.visible = false;
             content.addChild(bottomRightInCorner);
 
-            const bottomRightOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const bottomRightOutCorner = new PIXI.Sprite(resources['corner_out_' + suffix].texture);
             bottomRightOutCorner.width = border_thickness_px;
             bottomRightOutCorner.height = border_thickness_px;
             bottomRightOutCorner.x = cell_length_px - border_thickness_px;
@@ -484,7 +485,7 @@ function handleCellClick(event) {
             content.addChild(bottomRightSolidCorner);
 
             // Bottom Left Corner (In / Out / Solid)
-            const bottomLeftInCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const bottomLeftInCorner = new PIXI.Sprite(resources['corner_in_' + suffix].texture);
             bottomLeftInCorner.width = border_thickness_px;
             bottomLeftInCorner.height = border_thickness_px;
             bottomLeftInCorner.angle = -90;
@@ -493,7 +494,7 @@ function handleCellClick(event) {
             bottomLeftInCorner.visible = false;
             content.addChild(bottomLeftInCorner);
 
-            const bottomLeftOutCorner = new PIXI.Sprite(resources['corner_' + suffix].texture);
+            const bottomLeftOutCorner = new PIXI.Sprite(resources['corner_out_' + suffix].texture);
             bottomLeftOutCorner.width = border_thickness_px;
             bottomLeftOutCorner.height = border_thickness_px;
             bottomLeftOutCorner.angle = 90;
