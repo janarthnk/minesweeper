@@ -6,6 +6,7 @@
  */
 
 import {Board, ClickResult, Game, GameFactory, SpriteBlob} from './minesweeper.js'
+import { Timer } from './timer.js';
 
 /**
  * Constants
@@ -24,14 +25,27 @@ const num_mines = 10;
 const cell_length_px = 50;
 const border_thickness_px = 5;
 
-const app_width = cell_length_px * board_width;
-const app_height = cell_length_px * board_height;
+
+/**
+ * Determine app dimensions
+ */
+const board_width_px = cell_length_px * board_width;
+const board_height_px = cell_length_px * board_height;
+
+const control_bar_num_cells = 2;
+const control_bar_width_px = control_bar_num_cells * cell_length_px;
+const control_bar_height_px = board_height_px;
+
+const app_width = board_width_px + control_bar_width_px;
+const app_height = board_height_px;
 
 const blobMap = new Map();
 
 /**
  * Game Globals:
  */
+
+const timer = new Timer();
 
 let pixiResources;
 
@@ -69,6 +83,9 @@ const textureNameToPath = {
     'cell_6_dark':  './assets/amber/6_dark.png',
     'cell_7_dark':  './assets/amber/7_dark.png',
     'cell_8_dark':  './assets/amber/8_dark.png',
+    'green_dark': './assets/amber/green_dark.png',
+    'green_light': './assets/amber/green_light.png',
+    'clock': './assets/amber/clock.png'
 }
 
 // Create game class:
@@ -301,9 +318,13 @@ function handleCellClick(event) {
   * Performs setup for the game
   */
  function startGame() {
-    
+
     // Start the game (via the game object)
     game.start();
+
+    // Reset our timer
+    timer.reset();
+    timer.start();
 
     // Alias for pixi resources
     const resources = pixiResources;
@@ -638,6 +659,51 @@ function populateGameOverLossContainer(resources, stage) {
 }
 
 /**
+ * 
+ * @param {*} resources 
+ * @param {*} stage
+ */
+function populateControlBar(resources, stage) {
+    const controlBar = app.stage.getChildByName('controlBar');
+    if (controlBar == null) {
+        console.error("Couldn't resolve 'controlBar'!");
+        return;
+    }
+
+    // Position it horizontally on the side
+    controlBar.x = cell_length_px * board_width;
+
+    // Create background:
+    const background = new PIXI.Sprite(resources['green_dark'].texture);
+    background.height = cell_length_px * board_height;
+    background.width = cell_length_px * 2;
+
+    // Pattern:
+    // const background = new PIXI.Container();
+    // for (let i = 0; i < control_bar_num_cells; i++) {
+    //     for (let j = 0; j < board_height; j++) {
+    //         const suffix = ((i + j) % 2) == 0 ? '_light' : '_dark';
+    //         const texture = 'green' + suffix;
+    //         const cell = new PIXI.Sprite(resources[texture].texture);
+    //         cell.x = i * cell_length_px;
+    //         cell.y = j * cell_length_px;
+    //         cell.width = cell_length_px;
+    //         cell.height = cell_length_px;
+    //         background.addChild(cell);
+    //     }
+    // }
+
+    // Content - A middleman which helps position our control bar contents.
+    const content = new PIXI.Container();
+    content.name = "content";
+    content.x = cell_length_px * (control_bar_num_cells / 2);
+    content.y = control_bar_height_px / 2;
+    
+    controlBar.addChild(background);
+    controlBar.addChild(content);
+}
+
+/**
  * Main
  */
 
@@ -663,6 +729,11 @@ const gameOverWin = new PIXI.Container();
 gameOverWin.name = 'gameOverWin';
 app.stage.addChild(gameOverWin);
 
+// Create Control Bar
+const controlBar = new PIXI.Container();
+controlBar.name = 'controlBar';
+app.stage.addChild(controlBar);
+
 app.loader.load((loader, resources) => {
     // Save resources for use later:
     pixiResources = resources;
@@ -673,6 +744,43 @@ app.loader.load((loader, resources) => {
     // Populate game victory screen:
     populateGameOverWinContainer(resources, app.stage);
 
+    // Populate control bar
+    populateControlBar(resources, app.stage);
+    
+    // Create Clock
+    // Deliberately not in a function since assuming we only create this once...
+    const clockContainer = new PIXI.Container();
+    clockContainer.name = "clock";
+
+    // Create Clock Symbol:
+    const clockSymbol = new PIXI.Sprite(resources['clock'].texture);
+    clockSymbol.width = cell_length_px;
+    clockSymbol.height = cell_length_px;
+    clockSymbol.anchor.x = 0.5;
+    clockSymbol.anchor.y = 0.5;
+    clockContainer.addChild(clockSymbol);
+
+    // Create Time Text:
+    const timeText = new PIXI.Text("00:00");
+    timeText.name = "text";
+    timeText.anchor.set(0.5, 0.5);
+    timeText.width = cell_length_px;
+    timeText.y = 50;
+    clockContainer.addChild(timeText);
+
+    // Subscribe to our timer so we can update every second    
+    timer.subscribe("clock-text", (seconds) => {
+        // Format time into "MM:SS":
+        const ss = (seconds % 60).toString(10).padStart(2, '0');
+        const mm = ((Math.floor(seconds / 60)) % 60).toString(10).padStart(2, '0');
+        const hh = Math.floor(seconds / 3600) % 12; //unused but perhaps i shall use it :D ...
+        timeText.text = `${mm}:${ss}`;
+    });
+
+    // Todo wrap control bar in a class, so we can add buttons directly to it without knowing about internals...
+    const content = app.stage.getChildByName("controlBar").getChildByName("content");
+    content.addChild(clockContainer);
+    
     // Start the game
     startGame();
 });
