@@ -25,6 +25,8 @@ const num_mines = 10;
 const cell_length_px = 50;
 const border_thickness_px = 5;
 
+const flagCountTextFontSize = 24; 
+const flagCountTextGapPx = 3; // Indicates the seperation in pixels between the bottom edge of the flag count icon and top edge of the flag count text.
 
 /**
  * Determine app dimensions
@@ -64,7 +66,7 @@ const textureNameToPath = {
     'flag': './assets/amber/flag.png',
     'flag_light': './assets/amber/flag_light.png',
     'flag_dark': './assets/amber/flag_dark.png',
-    'flag_blank': './assets/amber/flag_blank.png',
+    'flag_count_icon': './assets/amber/flag_count_icon.png',
     'victory_banner': './assets/victory-banner.png',
     'cell_0_light': './assets/amber/light.png',
     'cell_1_light':  './assets/amber/1_light.png',
@@ -752,7 +754,7 @@ app.loader.load((loader, resources) => {
     // Deliberately not in a function since assuming we only create this once...
     const clockContainer = new PIXI.Container();
     clockContainer.name = "clock";
-    clockContainer.visible = false; // todo remove once positioning is in...
+    clockContainer.visible = false;
 
     // Create Clock Symbol:
     const clockSymbol = new PIXI.Sprite(resources['clock'].texture);
@@ -778,6 +780,9 @@ app.loader.load((loader, resources) => {
         timeText.text = `${mm}:${ss}`;
     });
 
+    console.log(`clock container width: ${clockContainer.width}`);
+    console.log(`clock container height: ${clockContainer.height}`);
+
     // Todo wrap control bar in a class, so we can add buttons directly to it without knowing about internals...
     const content = app.stage.getChildByName("controlBar").getChildByName("content");
     content.addChild(clockContainer);
@@ -787,28 +792,31 @@ app.loader.load((loader, resources) => {
     flagContainer.name = "flag";
 
     // Create Flag Symbol:
-    const flagSymbol = new PIXI.Sprite(resources['flag_blank'].texture);
-    flagSymbol.width = cell_length_px * 2;
-    flagSymbol.height = cell_length_px * 2;
+    const flagSymbol = new PIXI.Sprite(resources['flag_count_icon'].texture);
+    flagSymbol.width = cell_length_px;
+    flagSymbol.height = cell_length_px;
     flagSymbol.anchor.set(0.5, 0.5);
     flagContainer.addChild(flagSymbol);
 
     // Create flag Text:
-    const flagText = new PIXI.Text(num_mines.toString(), {fontSize: 24});
+    const flagText = new PIXI.Text(num_mines.toString(), {fontSize: flagCountTextFontSize});
     flagText.name = "text";
     flagText.anchor.set(0.5, 0.5);
-    // Positioning of the content is kind of arbitrary right now. 
-    // Since flag doesn't take up full width/height
-    flagText.y = cell_length_px; 
-    flagText.x = 5;
+    flagText.y = (flagSymbol.height / 2) + (flagText.height / 2) + flagCountTextGapPx; // assumes our symbol / text are anchored about their centers
+    flagText.x = 2; // a little shift so we line up with our flag pole.
     flagContainer.addChild(flagText);
 
+    // Update text when the number of flagged cells changes
     game.numFlagged$.subscribe((n) => {
         flagText.text = (num_mines - n).toString();
     });
 
+    console.log(`flagContainer width: ${flagContainer.width}`);
+    console.log(`flagContainer height: ${flagContainer.height}`);
+
     content.addChild(flagContainer);
 
+    
     
     // Start the game
     startGame();

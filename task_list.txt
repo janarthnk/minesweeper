@@ -6,13 +6,10 @@ Minesweeper task list
             Flag Sprite                     1 hr            3 hr
             GITHUB PLS      
             Curvy Border                    7 hr
-            -----------------------
+            
             
             add super parent 'field' which everything is added onto.
             side bar                        30m
-                color                       #66E355
-                height                      board_height * cell_length_px
-                width                       2 * cell_length_px
 
             Time Counter                    2 hr
                 Fixed text width
@@ -20,6 +17,11 @@ Minesweeper task list
             Flag Counter                    2 hr
                 icon   
                 update text...
+            
+            Positioning of flag text is arbitrary ...
+
+-----------------------
+            Positioning of items inside control bar should be delegated to a class...
             Positioning icons on bar...
             Choose size (small/med/large)   4 hr 
 
