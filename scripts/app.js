@@ -64,6 +64,7 @@ const textureNameToPath = {
     'flag': './assets/amber/flag.png',
     'flag_light': './assets/amber/flag_light.png',
     'flag_dark': './assets/amber/flag_dark.png',
+    'flag_blank': './assets/amber/flag_blank.png',
     'victory_banner': './assets/victory-banner.png',
     'cell_0_light': './assets/amber/light.png',
     'cell_1_light':  './assets/amber/1_light.png',
@@ -751,6 +752,7 @@ app.loader.load((loader, resources) => {
     // Deliberately not in a function since assuming we only create this once...
     const clockContainer = new PIXI.Container();
     clockContainer.name = "clock";
+    clockContainer.visible = false; // todo remove once positioning is in...
 
     // Create Clock Symbol:
     const clockSymbol = new PIXI.Sprite(resources['clock'].texture);
@@ -761,11 +763,10 @@ app.loader.load((loader, resources) => {
     clockContainer.addChild(clockSymbol);
 
     // Create Time Text:
-    const timeText = new PIXI.Text("00:00");
+    const timeText = new PIXI.Text("00:00", {fontSize: 24});
     timeText.name = "text";
     timeText.anchor.set(0.5, 0.5);
-    timeText.width = cell_length_px;
-    timeText.y = 50;
+    timeText.y = cell_length_px;
     clockContainer.addChild(timeText);
 
     // Subscribe to our timer so we can update every second    
@@ -780,6 +781,34 @@ app.loader.load((loader, resources) => {
     // Todo wrap control bar in a class, so we can add buttons directly to it without knowing about internals...
     const content = app.stage.getChildByName("controlBar").getChildByName("content");
     content.addChild(clockContainer);
+
+    // Create Flag Container:
+    const flagContainer = new PIXI.Container();
+    flagContainer.name = "flag";
+
+    // Create Flag Symbol:
+    const flagSymbol = new PIXI.Sprite(resources['flag_blank'].texture);
+    flagSymbol.width = cell_length_px * 2;
+    flagSymbol.height = cell_length_px * 2;
+    flagSymbol.anchor.set(0.5, 0.5);
+    flagContainer.addChild(flagSymbol);
+
+    // Create flag Text:
+    const flagText = new PIXI.Text(num_mines.toString(), {fontSize: 24});
+    flagText.name = "text";
+    flagText.anchor.set(0.5, 0.5);
+    // Positioning of the content is kind of arbitrary right now. 
+    // Since flag doesn't take up full width/height
+    flagText.y = cell_length_px; 
+    flagText.x = 5;
+    flagContainer.addChild(flagText);
+
+    game.numFlagged$.subscribe((n) => {
+        flagText.text = (num_mines - n).toString();
+    });
+
+    content.addChild(flagContainer);
+
     
     // Start the game
     startGame();

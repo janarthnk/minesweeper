@@ -5,24 +5,41 @@ Minesweeper task list
             Water cells                     2 hrs           1 hr
             Flag Sprite                     1 hr            3 hr
             GITHUB PLS      
-            Curvy Border                    7 hr            
-                make corner sprites mang...
-                Need to know how to
-                Fix up out borders...
+            Curvy Border                    7 hr
+            -----------------------
+            
+            add super parent 'field' which everything is added onto.
+            side bar                        30m
+                color                       #66E355
+                height                      board_height * cell_length_px
+                width                       2 * cell_length_px
+
             Time Counter                    2 hr
+                Fixed text width
+
             Flag Counter                    2 hr
+                icon   
+                update text...
+            Positioning icons on bar...
             Choose size (small/med/large)   4 hr 
 
-
-            
             You Lose Banner             4 hr
             You win Banner              4 hr
             Quit Button                 2 hr 
             Retry button                2 hr
             Surrender Banner            2 hr 
             Contact Banner              2 hr 
-            How to play                 4 hr 
+            How to play                 4 hr
 
+            ------------------------
+
+            Optional:
+                Clock hands
+
+
+
+
+            
 
         How long can you work for ?
             On a weekend? 6 hours

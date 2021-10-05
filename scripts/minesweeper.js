@@ -1,3 +1,4 @@
+import { BehaviorSubject } from "./util.js";
 
 /**
  * The Board class represents the minesweeper board and holds the contents of all cells.
@@ -146,7 +147,7 @@ export class Game {
     constructor(board) {
         this.board = board;
         this.numClicked = 0;
-        this.numFlagged = 0;
+        this.numFlagged$ = new BehaviorSubject(0);
     }
 
     start() {
@@ -184,7 +185,14 @@ export class Game {
         const numNonMines = (this.board.width * this.board.height) - numMines;
         return this.numClicked === numNonMines && this.numFlagged === numMines;
     }
-    
+
+    set numFlagged(n) {
+        this.numFlagged$.next(n);
+    }
+    get numFlagged() {
+        return this.numFlagged$.value;
+    }
+   
 }
 
 export class GameFactory {
