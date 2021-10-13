@@ -1,7 +1,7 @@
 // Second timer
 export class Timer {
     constructor() {
-        this.seconds = 0;
+        this._seconds = 0;
         this.intervalId = 0;
         this.subscribers = new Map();
     }
@@ -11,7 +11,6 @@ export class Timer {
         
         this.intervalId = setInterval(() => {
             this.seconds++;
-            this.subscribers.forEach((func) => func(this.seconds));
         }, 1000);
     }
 
@@ -25,6 +24,14 @@ export class Timer {
         this.seconds = 0;
     }
 
+    get seconds() {
+        return this._seconds;
+    }
+
+    set seconds(s) {
+        this._seconds = s;
+        this.subscribers.forEach((func) => func(this._seconds));
+    }
     /**
      * Subscribes a function `f` to be invoked every second.
      * @param {*} name - a string identifying the function

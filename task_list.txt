@@ -20,14 +20,19 @@ Minesweeper task list
             
             Positioning of flag text is arbitrary ...
 
------------------------
+
 
             Positioning icons on bar...
                 x Figure out the algorithm...
                 x Figure out what the class does
-                Code review + commit 
-                 
-            Stop timer on win!
+                x Code review + commit 
+
+
+
+            Stop timer on win / loss 
+            Set timer to 0 when restart is hit...
+-----------------------
+
             Choose size (small/med/large)   4 hr 
 
             You Lose Banner             4 hr
