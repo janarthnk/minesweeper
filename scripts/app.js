@@ -27,6 +27,7 @@ const border_thickness_px = 5;
 
 const flagCountTextFontSize = 24; 
 const flagCountTextGapPx = 3; // Indicates the seperation in pixels between the bottom edge of the flag count icon and top edge of the flag count text.
+const sideBarIconsVerticalGapPx = 10;
 
 /**
  * Determine app dimensions
@@ -681,7 +682,7 @@ function populateControlBar(resources, stage) {
     background.height = cell_length_px * board_height;
     background.width = cell_length_px * 2;
 
-    // Pattern:
+    // //Pattern:
     // const background = new PIXI.Container();
     // for (let i = 0; i < control_bar_num_cells; i++) {
     //     for (let j = 0; j < board_height; j++) {
@@ -695,15 +696,8 @@ function populateControlBar(resources, stage) {
     //         background.addChild(cell);
     //     }
     // }
-
-    // Content - A middleman which helps position our control bar contents.
-    const content = new PIXI.Container();
-    content.name = "content";
-    content.x = cell_length_px * (control_bar_num_cells / 2);
-    content.y = control_bar_height_px / 2;
     
     controlBar.addChild(background);
-    controlBar.addChild(content);
 }
 
 /**
@@ -754,20 +748,18 @@ app.loader.load((loader, resources) => {
     // Deliberately not in a function since assuming we only create this once...
     const clockContainer = new PIXI.Container();
     clockContainer.name = "clock";
-    clockContainer.visible = false;
 
     // Create Clock Symbol:
     const clockSymbol = new PIXI.Sprite(resources['clock'].texture);
     clockSymbol.width = cell_length_px;
     clockSymbol.height = cell_length_px;
     clockSymbol.anchor.x = 0.5;
-    clockSymbol.anchor.y = 0.5;
     clockContainer.addChild(clockSymbol);
 
     // Create Time Text:
     const timeText = new PIXI.Text("00:00", {fontSize: 24});
     timeText.name = "text";
-    timeText.anchor.set(0.5, 0.5);
+    timeText.anchor.x = 0.5;
     timeText.y = cell_length_px;
     clockContainer.addChild(timeText);
 
@@ -780,13 +772,6 @@ app.loader.load((loader, resources) => {
         timeText.text = `${mm}:${ss}`;
     });
 
-    console.log(`clock container width: ${clockContainer.width}`);
-    console.log(`clock container height: ${clockContainer.height}`);
-
-    // Todo wrap control bar in a class, so we can add buttons directly to it without knowing about internals...
-    const content = app.stage.getChildByName("controlBar").getChildByName("content");
-    content.addChild(clockContainer);
-
     // Create Flag Container:
     const flagContainer = new PIXI.Container();
     flagContainer.name = "flag";
@@ -795,14 +780,14 @@ app.loader.load((loader, resources) => {
     const flagSymbol = new PIXI.Sprite(resources['flag_count_icon'].texture);
     flagSymbol.width = cell_length_px;
     flagSymbol.height = cell_length_px;
-    flagSymbol.anchor.set(0.5, 0.5);
+    flagSymbol.anchor.x = 0.5;
     flagContainer.addChild(flagSymbol);
 
     // Create flag Text:
     const flagText = new PIXI.Text(num_mines.toString(), {fontSize: flagCountTextFontSize});
     flagText.name = "text";
-    flagText.anchor.set(0.5, 0.5);
-    flagText.y = (flagSymbol.height / 2) + (flagText.height / 2) + flagCountTextGapPx; // assumes our symbol / text are anchored about their centers
+    flagText.anchor.x = 0.5;
+    flagText.y = flagSymbol.height + flagCountTextGapPx; // assumes anchor.y = 0
     flagText.x = 2; // a little shift so we line up with our flag pole.
     flagContainer.addChild(flagText);
 
@@ -811,13 +796,29 @@ app.loader.load((loader, resources) => {
         flagText.text = (num_mines - n).toString();
     });
 
-    console.log(`flagContainer width: ${flagContainer.width}`);
-    console.log(`flagContainer height: ${flagContainer.height}`);
+    // Create content container and add it to the controlBar:
+    const controlBar = app.stage.getChildByName("controlBar");
+    const content = new PIXI.Container();
+    controlBar.addChild(content);
 
-    content.addChild(flagContainer);
+    // Add the icons to content container:
+    const sidebarIcons = [clockContainer, flagContainer];
+    let nextYPosition = 0;
+    sidebarIcons.forEach(c => {
+        content.addChild(c);
+        c.y = nextYPosition;
+        nextYPosition += c.height + sideBarIconsVerticalGapPx;
+    });
 
-    
-    
+    // Position Content container so it's centered vertically on the control bar
+    const contentHeight = sidebarIcons.map(c => c.height).reduce((totalHeight, childHeight) => totalHeight + childHeight); // height of all content
+    const totalContentHeight = contentHeight + (sideBarIconsVerticalGapPx * (sidebarIcons.length - 1)); // height of all content + gaps between them.
+    content.x = control_bar_width_px / 2;
+    content.y = (control_bar_height_px - totalContentHeight) / 2;
+
+    // Future enhancement, handle sidebar content overflow!
+    if (totalContentHeight > control_bar_height_px) console.warn("Side bar content height exceeds control bar height!");
+        
     // Start the game
     startGame();
 });

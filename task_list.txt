@@ -21,8 +21,13 @@ Minesweeper task list
             Positioning of flag text is arbitrary ...
 
 -----------------------
-            Positioning of items inside control bar should be delegated to a class...
+
             Positioning icons on bar...
+                x Figure out the algorithm...
+                x Figure out what the class does
+                Code review + commit 
+                 
+            Stop timer on win!
             Choose size (small/med/large)   4 hr 
 
             You Lose Banner             4 hr
