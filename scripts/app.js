@@ -121,6 +121,7 @@ app.view.addEventListener('contextmenu', (e) => {
  * Functions
  */
 function showVictory() {
+    timer.stop();
     console.log(`Congrats you won!`);
     resetCellLayer();
     const gameOverWinContainer = app.stage.getChildByName('gameOverWin');
@@ -263,6 +264,7 @@ function handleCellLeftClick(blob) {
         // Game over:
         setTimeout(() => {
             resetCellLayer();
+            timer.stop();
             const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
             gameOverLossContainer.visible = true;
         });
