@@ -31,21 +31,38 @@ Minesweeper task list
 
             Stop timer on win / loss 
             Set timer to 0 when restart is hit...
------------------------
+           
+            Look through remaining tasks.           Dec 5th
+            Take a look at uncommitted work.        Dec 5th 2021
 
-            Choose size (small/med/large)   4 hr 
+            ----------------------- CURRENT -----------------------
+            Address all warnings
 
-            You Lose Banner             4 hr
-            You win Banner              4 hr
-            Quit Button                 2 hr 
-            Retry button                2 hr
-            Surrender Banner            2 hr 
-            Contact Banner              2 hr 
-            How to play                 4 hr
+            Choose size (small/med/large)   4 hr
+                Design dialog
+                input (s/m/l)
+                    sizeDialog (basic)
+                respond to input+
+                    - on click change visibility to false
+                    - emit some kind of event with difficulty
+                    - subscriber listens and then changes W,H,M and starts game!
+                            recreate grid with new size.... (is this done?)
+                            reposition control bar
+                            reposition controlbar elements
+            
+            Images To Create / Refine
+                You Lose Banner             4 hr
+                You win Banner              4 hr
+                Quit Button                 2 hr 
+                Retry button                2 hr
+                Surrender Banner            2 hr 
+                Contact Banner              2 hr 
+                How to play                 4 hr
 
-            ------------------------
+            ~~~~~~~~~ WOOOO Finish line, build that telescope mang ~~~~~~~~~~~~~~~~~~~~~~ WOOOOOOOOO
 
             Optional:
+                Title screen
                 Clock hands
 
 

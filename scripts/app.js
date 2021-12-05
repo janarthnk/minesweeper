@@ -16,8 +16,14 @@ const debug_mode = true;
 /**
  * Modes (w,h,m):
  *  Easy (10, 8, 10)
+ *  Medium (18, 14, 40)
  *  Hard (24, 20, 99)
  */
+const modes = {
+    "easy" : { w: 10, h: 8, numMines: 10 },
+    "medium": { w: 18, h: 14, numMines: 40 },
+    "hard": { w: 24, h: 20, numMines: 99 }
+}
 const board_width = 10;
 const board_height = 8;
 const num_mines = 10;
@@ -89,7 +95,8 @@ const textureNameToPath = {
     'cell_8_dark':  './assets/amber/8_dark.png',
     'green_dark': './assets/amber/green_dark.png',
     'green_light': './assets/amber/green_light.png',
-    'clock': './assets/amber/clock.png'
+    'clock': './assets/amber/clock.png',
+    'difficulty_icon': './assets/amber/border.png'
 }
 
 // Create game class:
@@ -793,6 +800,17 @@ app.loader.load((loader, resources) => {
     flagText.x = 2; // a little shift so we line up with our flag pole.
     flagContainer.addChild(flagText);
 
+    // Create Difficulty Icon:
+    const difficultyIcon = new PIXI.Sprite(resources['difficulty_icon'].texture);
+    difficultyIcon.width = cell_length_px;
+    difficultyIcon.height = cell_length_px;
+    difficultyIcon.anchor.x = 0.5;
+    difficultyIcon.interactive = true;
+    difficultyIcon.buttonMode = true;
+    difficultyIcon.on('pointerdown', () => {
+        console.log("WHATS GOOD HOMES");
+    });
+
     // Update text when the number of flagged cells changes
     game.numFlagged$.subscribe((n) => {
         flagText.text = (num_mines - n).toString();
@@ -804,7 +822,7 @@ app.loader.load((loader, resources) => {
     controlBar.addChild(content);
 
     // Add the icons to content container:
-    const sidebarIcons = [clockContainer, flagContainer];
+    const sidebarIcons = [clockContainer, flagContainer, difficultyIcon];
     let nextYPosition = 0;
     sidebarIcons.forEach(c => {
         content.addChild(c);
@@ -820,7 +838,46 @@ app.loader.load((loader, resources) => {
 
     // Future enhancement, handle sidebar content overflow!
     if (totalContentHeight > control_bar_height_px) console.warn("Side bar content height exceeds control bar height!");
-        
+    
+    /**
+     * Create DifficultyDialog
+     */
+    const difficultyDialog = new PIXI.Container();
+    difficultyDialog.name = "difficultyDialog";
+    app.stage.addChild(difficultyDialog);
+    //Center difficulty dialog:
+    difficultyDialog.x = app_width / 2;
+    difficultyDialog.y = app_height / 2;
+    
+    // Create backdrop for dialog.
+    const backdrop = new PIXI.Graphics();
+    backdrop.beginFill(0x000000, 0.5); // todo: Adjust fill and alpha
+    backdrop.drawRect(-app_width / 2, -app_height / 2, app_width, app_height); // screen size since we want to prevent them from playing the game... 
+    backdrop.endFill();
+    backdrop.interactive = true;
+    backdrop.buttonMode = true;
+    backdrop.on('pointerdown', () => {
+        // Hide dialog
+        difficultyDialog.visible = false;
+    });
+    difficultyDialog.addChild(backdrop);
+
+    // Create container.
+    const widgetWidth = 400;
+    const widgetHeight = 200;
+    const widgetRadius = 25;
+    const widget = new PIXI.Graphics();
+    widget.beginFill(0xff0000);
+    widget.drawRect(- widgetWidth / 2, -widgetHeight / 2, widgetWidth, widgetHeight);
+    //widget.drawRoundedRect(0, 0, widgetWidth, widgetHeight, widgetRadius);
+    widget.endFill();
+    // widget.anchor.x = 0.5;
+    // widget.anchor.y = 0.5;
+
+    difficultyDialog.addChild(widget);
+
+
+
     // Start the game
     startGame();
 });
