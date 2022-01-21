@@ -35,8 +35,8 @@ Minesweeper task list
             Look through remaining tasks.           Dec 5th
             Take a look at uncommitted work.        Dec 5th 2021
 
-            ----------------------- CURRENT -----------------------
-            Address all warnings
+            
+            Address all warnings   ----------------------- CURRENT -----------------------
 
             Choose size (small/med/large)   4 hr
                 Design dialog
