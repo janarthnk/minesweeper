@@ -36,21 +36,30 @@ Minesweeper task list
             Take a look at uncommitted work.        Dec 5th 2021
 
             
-            Address all warnings   ----------------------- CURRENT -----------------------
+            Address all warnings   
+            Clicking on difficultyIcon shows/hides the difficultyDialog
 
-            Choose size (small/med/large)   4 hr
-                Design dialog
-                input (s/m/l)
-                    sizeDialog (basic)
-                respond to input+
-                    - on click change visibility to false
-                    - emit some kind of event with difficulty
-                    - subscriber listens and then changes W,H,M and starts game!
-                            recreate grid with new size.... (is this done?)
-                            reposition control bar
-                            reposition controlbar elements
+            Created small medium large buttons. 
+            Move logic to create size bar into function...
+            moved control bar content creation into function!
+            started creating function to update size.
+            close size dialog after changing size!
+            emove app_width / app_height from dialog parameters...
+            Reposition game over loss container
+            // Reposition game over win container
+            // Reposition size dialog
+            // Reposition control bar
+            // Change height of control bar:
+            Fixed spacing size
+            fixed backdrop resizing
+
+            commit work + review!
+            
+----------------------- CURRENT -----------------------
             
             Images To Create / Refine
+                Size Icon
+                Size Dialog
                 You Lose Banner             4 hr
                 You win Banner              4 hr
                 Quit Button                 2 hr 

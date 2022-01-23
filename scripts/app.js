@@ -13,20 +13,15 @@ import { Timer } from './timer.js';
  */
 const debug_mode = true;
 
-/**
- * Modes (w,h,m):
- *  Easy (10, 8, 10)
- *  Medium (18, 14, 40)
- *  Hard (24, 20, 99)
- */
-const modes = {
-    "easy" : { w: 10, h: 8, numMines: 10 },
-    "medium": { w: 18, h: 14, numMines: 40 },
-    "hard": { w: 24, h: 20, numMines: 99 }
+const sizes = {
+    "small" : { w: 10, h: 8, numMines: 10 },
+    "medium" : { w: 18, h: 14, numMines: 40 },
+    "large"  : { w: 24, h: 20, numMines: 99 }
 }
-const board_width = 10;
-const board_height = 8;
-const num_mines = 10;
+
+let board_width = 10;
+let board_height = 8;
+let num_mines = 10;
 
 const cell_length_px = 50;
 const border_thickness_px = 5;
@@ -38,15 +33,15 @@ const sideBarIconsVerticalGapPx = 10;
 /**
  * Determine app dimensions
  */
-const board_width_px = cell_length_px * board_width;
-const board_height_px = cell_length_px * board_height;
+let board_width_px = cell_length_px * board_width;
+let board_height_px = cell_length_px * board_height;
 
 const control_bar_num_cells = 2;
 const control_bar_width_px = control_bar_num_cells * cell_length_px;
-const control_bar_height_px = board_height_px;
+let control_bar_height_px = board_height_px;
 
-const app_width = board_width_px + control_bar_width_px;
-const app_height = board_height_px;
+let app_width = board_width_px + control_bar_width_px;
+let app_height = board_height_px;
 
 const blobMap = new Map();
 
@@ -114,6 +109,7 @@ const app = new PIXI.Application({
     backgroundColor: 0xb2dcff
 });
 
+
 // The application will create a canvas element for you that you
 // can then insert into the DOM
 document.body.appendChild(app.view);
@@ -126,6 +122,66 @@ app.view.addEventListener('contextmenu', (e) => {
 /**
  * Functions
  */
+// todo doc
+// todo call this function with "small" when the game loads for the first time!
+function changeSize(size) {
+    const newDimensions = sizes[size];
+    if (newDimensions == null) {
+        console.error("Unable to determine new board dimensions");
+        return;
+    }
+
+    // Update Application Parameters:
+    board_width = newDimensions.w;
+    board_height = newDimensions.h;
+    num_mines = newDimensions.numMines;
+
+    board_width_px = cell_length_px * board_width;
+    board_height_px = cell_length_px * board_height;
+
+    control_bar_height_px = board_height_px;
+
+    app_width = board_width_px + control_bar_width_px;
+    app_height = board_height_px;
+
+    // Create new board + update game
+    const board = new Board(board_width, board_height, num_mines);
+    game.board = board;
+
+    // Update Application Dimensions
+    app.renderer.resize(app_width, app_height);
+
+    // Reposition game over loss container
+    const gameOverLoss = app.stage.getChildByName('gameOverLoss');
+    gameOverLoss.x = app_width / 2;
+    gameOverLoss.y = app_height / 2;
+
+    // Reposition game over win container
+    const gameOverWin = app.stage.getChildByName('gameOverWin');
+    gameOverWin.x = app_width / 2;
+    gameOverWin.y = app_height / 2;
+
+    // Reposition size dialog
+    const sizeDialog = app.stage.getChildByName('sizeDialog');
+    sizeDialog.x = app_width / 2;
+    sizeDialog.y = app_height / 2;
+
+    // Fix backdrop size!
+    const backdrop = sizeDialog.getChildByName('backdrop');
+    backdrop.height = app_height;
+    backdrop.width = app_width;
+
+    // Reposition control bar
+    const controlBar = app.stage.getChildByName('controlBar');
+    controlBar.x = board_width_px;
+
+    // Change height of control bar:
+    const controlBarBg = controlBar.getChildByName('background');
+    controlBarBg.height = app_height;
+        
+    startGame();
+}
+
 function showVictory() {
     timer.stop();
     console.log(`Congrats you won!`);
@@ -581,8 +637,8 @@ function populateGameOverWinContainer(resources, stage) {
 
     // Game Over Win Container:
     gameOverWin.visible = false;
-    gameOverWin.x = app_width / 2;
-    gameOverWin.y = app_height / 2;
+    gameOverWin.x = 300;
+    gameOverWin.y = 200;
 
     const banner = new PIXI.Sprite(resources.victory_banner.texture);
     banner.anchor.x = 0.5;
@@ -632,8 +688,8 @@ function populateGameOverLossContainer(resources, stage) {
 
     // Configure Game Over Loss container
     gameOverLoss.visible = false;
-    gameOverLoss.x = app_width / 2;
-    gameOverLoss.y = app_height / 2;
+    gameOverLoss.x = 300;
+    gameOverLoss.y = 200;
 
     // Setup gameOverLoss container:
     const banner = new PIXI.Sprite(resources.game_over_loss_banner.texture);
@@ -687,6 +743,7 @@ function populateControlBar(resources, stage) {
 
     // Create background:
     const background = new PIXI.Sprite(resources['green_dark'].texture);
+    background.name = "background";
     background.height = cell_length_px * board_height;
     background.width = cell_length_px * 2;
 
@@ -708,52 +765,8 @@ function populateControlBar(resources, stage) {
     controlBar.addChild(background);
 }
 
-/**
- * Main
- */
-
-
-// Add textures to loader to be loaded:
-Object.keys(textureNameToPath).forEach(name => app.loader.add(name, textureNameToPath[name]));
-
-// spriteMap[y][x] gets you the clickable sprite at that cell
-const spriteMap = {};
-
-// Create Layer for Cells
-const cellLayer = new PIXI.Container();
-cellLayer.name = 'cellLayer';
-app.stage.addChild(cellLayer);
-
-// Create Game Over Loss Container:
-const gameOverLoss = new PIXI.Container();
-gameOverLoss.name = 'gameOverLoss';
-app.stage.addChild(gameOverLoss);
-
-// Create Game Over Win Container:
-const gameOverWin = new PIXI.Container();
-gameOverWin.name = 'gameOverWin';
-app.stage.addChild(gameOverWin);
-
-// Create Control Bar
-const controlBar = new PIXI.Container();
-controlBar.name = 'controlBar';
-app.stage.addChild(controlBar);
-
-app.loader.load((loader, resources) => {
-    // Save resources for use later:
-    pixiResources = resources;
-
-    // Populate game over loss screen:
-    populateGameOverLossContainer(resources, app.stage);
-
-    // Populate game victory screen:
-    populateGameOverWinContainer(resources, app.stage);
-
-    // Populate control bar
-    populateControlBar(resources, app.stage);
-    
+function createAndPositionControlBarContent(resources, stage) {
     // Create Clock
-    // Deliberately not in a function since assuming we only create this once...
     const clockContainer = new PIXI.Container();
     clockContainer.name = "clock";
 
@@ -835,24 +848,28 @@ app.loader.load((loader, resources) => {
     const contentHeight = sidebarIcons.map(c => c.height).reduce((totalHeight, childHeight) => totalHeight + childHeight); // height of all content
     const totalContentHeight = contentHeight + (sideBarIconsVerticalGapPx * (sidebarIcons.length - 1)); // height of all content + gaps between them.
     content.x = control_bar_width_px / 2;
-    content.y = (control_bar_height_px - totalContentHeight) / 2;
+    // content.y = (control_bar_height_px - totalContentHeight) / 2; // center content horizontally...
+    content.y = 50; // Fixed spacing offset from top
 
     // Future enhancement, handle sidebar content overflow!
     if (totalContentHeight > control_bar_height_px) console.warn("Side bar content height exceeds control bar height!");
-    
-    /**
-     * Create sizeDialog
-     */
-    const sizeDialog = new PIXI.Container();
-    sizeDialog.name = "sizeDialog";
-    app.stage.addChild(sizeDialog);
+}
+
+function populateSizeDialog(resources, stage) {
+    const sizeDialog = stage.getChildByName('sizeDialog');
+    if (sizeDialog == null) {
+        console.error(`Could not resolve size dialog`);
+        return;
+    }
+
     //Center difficulty dialog:
-    sizeDialog.x = app_width / 2;
-    sizeDialog.y = app_height / 2;
+    sizeDialog.x = 300;
+    sizeDialog.y = 200;
     
     // Create backdrop for dialog.
     const backdrop = new PIXI.Graphics();
-    backdrop.beginFill(0x000000, 0.25); // todo: Adjust fill and alpha
+    backdrop.name = 'backdrop';
+    backdrop.beginFill(0x000000, 0.3); // todo: Adjust fill and alpha
     backdrop.drawRect(-app_width / 2, -app_height / 2, app_width, app_height); // screen size since we want to prevent them from playing the game... 
     backdrop.endFill();
     backdrop.interactive = true;
@@ -880,7 +897,7 @@ app.loader.load((loader, resources) => {
     const sizeIconWidth = 75;
     const sizeIconHeight = 75;
     const sizeIconXSeperation = sizeIconWidth + 50;
-    
+
     // Create Small Icon:
     const smallIcon = new PIXI.Graphics();
     smallIcon.beginFill(0x00FF00); // todo: Adjust fill and alpha
@@ -889,7 +906,9 @@ app.loader.load((loader, resources) => {
     smallIcon.interactive = true;
     smallIcon.buttonMode = true;
     smallIcon.on('pointerdown', () => {
-       console.log("whur my small hoes @?");
+        changeSize('small');
+        sizeDialog.visible = false;
+
     });
     smallIcon.x = -sizeIconXSeperation;
     widget.addChild(smallIcon);
@@ -902,12 +921,12 @@ app.loader.load((loader, resources) => {
     mediumIcon.interactive = true;
     mediumIcon.buttonMode = true;
     mediumIcon.on('pointerdown', () => {
-       console.log("whur my medium hoes @?");
+        changeSize('medium');
+        sizeDialog.visible = false;
     });
     widget.addChild(mediumIcon);
 
     // Create Large Icon
-    // Create Medium Icon:
     const largeIcon = new PIXI.Graphics();
     largeIcon.beginFill(0xFF0000); // todo: Adjust fill and alpha
     largeIcon.drawRect(-sizeIconWidth / 2, -sizeIconHeight / 2, sizeIconWidth, sizeIconHeight);
@@ -915,10 +934,66 @@ app.loader.load((loader, resources) => {
     largeIcon.interactive = true;
     largeIcon.buttonMode = true;
     largeIcon.on('pointerdown', () => {
-       console.log("whur my large hoes @?");
+        changeSize('large');
+        sizeDialog.visible = false;
     });
     largeIcon.x = sizeIconXSeperation;
     widget.addChild(largeIcon);
+}
+
+/**
+ * Main
+ */
+
+// Add textures to loader to be loaded:
+Object.keys(textureNameToPath).forEach(name => app.loader.add(name, textureNameToPath[name]));
+
+// spriteMap[y][x] gets you the clickable sprite at that cell
+const spriteMap = {};
+
+// Create Layer for Cells
+const cellLayer = new PIXI.Container();
+cellLayer.name = 'cellLayer';
+app.stage.addChild(cellLayer);
+
+// Create Game Over Loss Container:
+const gameOverLoss = new PIXI.Container();
+gameOverLoss.name = 'gameOverLoss';
+app.stage.addChild(gameOverLoss);
+
+// Create Game Over Win Container:
+const gameOverWin = new PIXI.Container();
+gameOverWin.name = 'gameOverWin';
+app.stage.addChild(gameOverWin);
+
+// Create Control Bar
+const controlBar = new PIXI.Container();
+controlBar.name = 'controlBar';
+app.stage.addChild(controlBar);
+
+// Create Size Dialog:
+const sizeDialog = new PIXI.Container();
+sizeDialog.name = "sizeDialog";
+app.stage.addChild(sizeDialog);
+
+app.loader.load((loader, resources) => {
+    // Save resources for use later:
+    pixiResources = resources;
+
+    // Populate game over loss screen:
+    populateGameOverLossContainer(resources, app.stage);
+
+    // Populate game victory screen:
+    populateGameOverWinContainer(resources, app.stage);
+
+    // Populate control bar
+    populateControlBar(resources, app.stage);
+    
+    // Create and Position Control Bar Content:
+    createAndPositionControlBarContent(resources, app.stage);
+
+    // Create Size Dialog:
+    populateSizeDialog(resources, app.stage);
 
     // Start the game
     startGame();
