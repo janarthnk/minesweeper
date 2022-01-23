@@ -1,8 +1,5 @@
 /**
  * Author: Janarth Kumaresan
- * 
- * High level todos:
- *      - remove all those dumb console messages:
  */
 
 import {Board, ClickResult, Game, GameFactory, SpriteBlob} from './minesweeper.js'
@@ -19,9 +16,11 @@ const sizes = {
     "large"  : { w: 24, h: 20, numMines: 99 }
 }
 
-let board_width = 10;
-let board_height = 8;
-let num_mines = 10;
+const default_size = 'small';
+
+let board_width = sizes[default_size].w;
+let board_height = sizes[default_size].h;
+let num_mines = sizes[default_size].numMines;
 
 const cell_length_px = 50;
 const border_thickness_px = 5;
@@ -122,8 +121,12 @@ app.view.addEventListener('contextmenu', (e) => {
 /**
  * Functions
  */
-// todo doc
-// todo call this function with "small" when the game loads for the first time!
+
+/**
+ * Does the work necessary to change the boards size.
+ * @param {*} size - One of the following values 'small', 'medium', 'large'
+ * @returns 
+ */
 function changeSize(size) {
     const newDimensions = sizes[size];
     if (newDimensions == null) {
@@ -643,7 +646,6 @@ function populateGameOverWinContainer(resources, stage) {
     const banner = new PIXI.Sprite(resources.victory_banner.texture);
     banner.anchor.x = 0.5;
     banner.anchor.y = 0.5;
-    // todo scale so that it doesn't overflow!
     gameOverWin.addChild(banner);
 
     // Add Retry Button
@@ -863,13 +865,13 @@ function populateSizeDialog(resources, stage) {
     }
 
     //Center difficulty dialog:
-    sizeDialog.x = 300;
-    sizeDialog.y = 200;
+    sizeDialog.x = app_width / 2;
+    sizeDialog.y = app_height / 2;
     
     // Create backdrop for dialog.
     const backdrop = new PIXI.Graphics();
     backdrop.name = 'backdrop';
-    backdrop.beginFill(0x000000, 0.3); // todo: Adjust fill and alpha
+    backdrop.beginFill(0x000000, 0.3);
     backdrop.drawRect(-app_width / 2, -app_height / 2, app_width, app_height); // screen size since we want to prevent them from playing the game... 
     backdrop.endFill();
     backdrop.interactive = true;
