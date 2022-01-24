@@ -54,12 +54,12 @@ Minesweeper task list
             fixed backdrop resizing
 
             commit work + review!
-            
+            Size Icon                       Jan 24th 2022
 ----------------------- CURRENT -----------------------
             
             Images To Create / Refine
-                Size Icon
-                Size Dialog
+             
+                Size Dialog                 
                 You Lose Banner             4 hr
                 You win Banner              4 hr
                 Quit Button                 2 hr 
@@ -68,12 +68,16 @@ Minesweeper task list
                 Contact Banner              2 hr 
                 How to play                 4 hr
 
-            ~~~~~~~~~ WOOOO Finish line, build that telescope mang ~~~~~~~~~~~~~~~~~~~~~~ WOOOOOOOOO
+~~~~~~~~~~~~~~~~~~~~~~~~~ WOOOO Finish line, build that telescope mang ~~~~~~~~~~~~~~~~~~~~~~ WOOOOOOOOO
 
             Optional:
+
                 Title screen
                 Clock hands
-
+                mine icon
+                losing animation
+                changing size outputs size somewhere...
+                records
 
 
 

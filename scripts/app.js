@@ -89,7 +89,8 @@ const textureNameToPath = {
     'cell_8_dark':  './assets/amber/8_dark.png',
     'green_dark': './assets/amber/green_dark.png',
     'green_light': './assets/amber/green_light.png',
-    'clock': './assets/amber/clock.png'
+    'clock': './assets/amber/clock.png',
+    'size': './assets/amber/size_3.png'
 }
 
 // Create game class:
@@ -816,7 +817,7 @@ function createAndPositionControlBarContent(resources, stage) {
 
     // Create Difficulty Icon:
     // todo: create texture for size dialog
-    const sizeIcon = new PIXI.Sprite(resources['border'].texture);    
+    const sizeIcon = new PIXI.Sprite(resources['size'].texture);    
     sizeIcon.width = cell_length_px;
     sizeIcon.height = cell_length_px;
     sizeIcon.anchor.x = 0.5;
