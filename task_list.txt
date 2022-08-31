@@ -61,10 +61,12 @@ Minesweeper task list
             August 29th, 2022!
                 We have about 3 days to complete this project... More like 2...
                 Now what features would I want to consider this complete ???
-                    Choose size
-                    Help box
+                x    Choose size
                     Game over Dialog
+                        retry button
+                        quit button
                     You win Dialog
+                    Refine
 
                 Nice to have:
                     You Win Confetti
