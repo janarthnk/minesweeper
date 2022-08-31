@@ -17,6 +17,7 @@ const sizes = {
 }
 
 const default_size = 'small';
+let gameSize = default_size;
 
 let board_width = sizes[default_size].w;
 let board_height = sizes[default_size].h;
@@ -56,7 +57,7 @@ const textureNameToPath = {
     'unknown': './assets/unknown-cell.png',
     'light_blue':'./assets/amber/unknown_light.png',
     'dark_blue': './assets/amber/unknown_dark.png',
-    'game_over_loss_banner': './assets/game-over-loss-banner.png',
+    'game_over_loss_banner': './assets/amber/game-over.png',
     'border': './assets/amber/border.png',
     'corner_in_light' : './assets/amber/cornerInLight.png',
     'corner_in_dark' : './assets/amber/cornerInDark.png',
@@ -109,6 +110,7 @@ const app = new PIXI.Application({
     backgroundColor: 0xb2dcff
 });
 
+app.stage.sortableChildren = true;
 
 // The application will create a canvas element for you that you
 // can then insert into the DOM
@@ -134,6 +136,8 @@ function changeSize(size) {
         console.error("Unable to determine new board dimensions");
         return;
     }
+    // Update game size:
+    gameSize = size;
 
     // Update Application Parameters:
     board_width = newDimensions.w;
@@ -154,6 +158,9 @@ function changeSize(size) {
 
     // Update Application Dimensions
     app.renderer.resize(app_width, app_height);
+
+    // Redraw grid background:
+    redrawGridBackground();
 
     // Reposition game over loss container
     const gameOverLoss = app.stage.getChildByName('gameOverLoss');
@@ -190,6 +197,10 @@ function showVictory() {
     timer.stop();
     console.log(`Congrats you won!`);
     resetCellLayer();
+
+    const gridBg = app.stage.getChildByName('gridBackground');
+    gridBg.visible = true;
+
     const gameOverWinContainer = app.stage.getChildByName('gameOverWin');
     gameOverWinContainer.visible = true;
 }
@@ -204,7 +215,6 @@ function resetCellLayer() {
 
     // Clear all listeners....
     cellLayer.children.forEach(c => c.removeAllListeners('pointerdown'));
-    console.log(`cleared all listeners`);
 
     // Remove all children
     cellLayer.removeChildren();
@@ -331,8 +341,7 @@ function handleCellLeftClick(blob) {
         setTimeout(() => {
             resetCellLayer();
             timer.stop();
-            const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
-            gameOverLossContainer.visible = true;
+            displayGameOver();
         });
     } else if ( res === ClickResult.ZERO ) {
         // Show all cells on the island:
@@ -386,6 +395,18 @@ function handleCellClick(event) {
         showVictory();
     }
 }
+
+function displayGameOver() {
+    console.log(`Game over!`);
+
+    // display grid bg:
+    const gridBg = app.stage.getChildByName('gridBackground');
+    gridBg.visible = true;
+
+    const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
+    gameOverLossContainer.visible = true;
+}
+
  /**
   * Performs setup for the game
   */
@@ -403,6 +424,11 @@ function handleCellClick(event) {
 
     // Clear blob map
     blobMap.clear();
+
+
+    //Hide our grid background:
+    const gridBg = app.stage.getChildByName('gridBackground');
+    gridBg.visible = false;
 
     const cellLayer = app.stage.getChildByName('cellLayer');
 
@@ -678,6 +704,50 @@ function populateGameOverWinContainer(resources, stage) {
     gameOverWin.addChild(quit);
 }
 
+function redrawGridBackground(animateMS = 0) {
+
+    const gridBg = app.stage.getChildByName('gridBackground');
+    if (gridBg == null) {
+        console.error(`Couldn't find grid bg container`);
+        return;
+    }
+
+    const resources = pixiResources;
+
+    // Clear children
+    gridBg.removeChildren();
+
+    // Create Background
+    for (let y = 0; y < board_height; y++) {
+        for (let x = 0; x < board_width + control_bar_num_cells; x++) {
+            const suffix = (x + y) % 2 === 0 ? 'light' : 'dark';
+            const texture = (x + y) % 2 === 0 ? resources.light_blue.texture : resources.dark_blue.texture;
+            const cell = new PIXI.Sprite(texture);
+            // Setup the position
+            cell.width = cell_length_px;
+            cell.height = cell_length_px;
+        
+            // Rotate around the center
+            cell.anchor.x = 0;
+            cell.anchor.y = 0;
+        
+            cell.x = x * cell_length_px;
+            cell.y = y * cell_length_px;
+
+            gridBg.addChild(cell);
+
+            // Animate appearance
+            if (animateMS > 0) {
+                cell.visible = false;
+                setTimeout(() => {
+                    cell.visible = true;
+                }, animateMS * Math.random())
+            }
+        }
+    }    
+}
+
+
  /**
  * Creates the 'Game Over Loss' container and all children!
  * @param {*} resources 
@@ -691,13 +761,14 @@ function populateGameOverLossContainer(resources, stage) {
 
     // Configure Game Over Loss container
     gameOverLoss.visible = false;
-    gameOverLoss.x = 300;
-    gameOverLoss.y = 200;
+
 
     // Setup gameOverLoss container:
     const banner = new PIXI.Sprite(resources.game_over_loss_banner.texture);
     banner.anchor.x = 0.5;
     banner.anchor.y = 0.5;
+    banner.scale.x = 0.6;
+    banner.scale.y = 0.6;
     // todo scale so that it doesn't overflow!
     gameOverLoss.addChild(banner);
 
@@ -859,12 +930,34 @@ function createAndPositionControlBarContent(resources, stage) {
 }
 
 function populateSizeDialog(resources, stage) {
+    const defaultTextStyle = {fontWeight: "bold", fill: "0x755800"};
+
     const sizeDialog = stage.getChildByName('sizeDialog');
     if (sizeDialog == null) {
         console.error(`Could not resolve size dialog`);
         return;
     }
 
+    // Store selectedDifficulty:
+    let selectedSize = gameSize;
+    // Method to select size
+    const selectSize = (size) => {
+        selectedSize = size;
+        switch (size) {
+            case 'small':
+                highlight.x = -sizeIconXSeperation;
+                break;
+            case 'medium':
+                highlight.x = 0;
+                break;
+            case 'large':
+                highlight.x = sizeIconXSeperation;
+                break;
+            default:
+                console.error(`unhandled size!`);
+        }
+    }
+    
     //Center difficulty dialog:
     sizeDialog.x = app_width / 2;
     sizeDialog.y = app_height / 2;
@@ -878,8 +971,10 @@ function populateSizeDialog(resources, stage) {
     backdrop.interactive = true;
     backdrop.buttonMode = true;
     backdrop.on('pointerdown', () => {
+        selectSize(gameSize);
         sizeDialog.visible = false;
     });
+    backdrop.zIndex = -2;
     sizeDialog.addChild(backdrop);
 
     // Create bounding box for size icons
@@ -892,14 +987,32 @@ function populateSizeDialog(resources, stage) {
     // widget.drawRect(- widgetWidth / 2, -widgetHeight / 2, widgetWidth, widgetHeight);
     widget.drawRoundedRect( -widgetWidth / 2, -widgetHeight / 2, widgetWidth, widgetHeight, widgetRadius);
     widget.endFill();
+    widget.interactive = true;
+    widget.on('pointerdown', () => {
+        
+    });
+
     // widget.anchor.x = 0.5;
     // widget.anchor.y = 0.5;
+    widget.zIndex = 0;
     sizeDialog.addChild(widget);
 
     // Create Size Buttons:    
     const sizeIconWidth = 75;
-    const sizeIconHeight = 75;
+    const sizeIconHeight = 100;
     const sizeIconXSeperation = sizeIconWidth + 50;
+    const sizeIconY = 15;
+
+    // Selected size icon highlight:
+    const highlight = new PIXI.Graphics();
+    highlight.lineStyle(3,0x755800);
+    const highlightW = sizeIconWidth * 1.2;
+    const highlightH = sizeIconHeight * 1.2;
+    highlight.drawRect(-highlightW / 2, -highlightH / 2, highlightW, highlightH);
+    highlight.x = -sizeIconXSeperation; 
+    highlight.y = sizeIconY;
+    widget.addChild(highlight);
+
 
     // Create Small Icon:
     const smallIcon = new PIXI.Graphics();
@@ -909,11 +1022,17 @@ function populateSizeDialog(resources, stage) {
     smallIcon.interactive = true;
     smallIcon.buttonMode = true;
     smallIcon.on('pointerdown', () => {
-        changeSize('small');
-        sizeDialog.visible = false;
-
+        selectSize('small');
     });
     smallIcon.x = -sizeIconXSeperation;
+    smallIcon.y = sizeIconY;
+
+    // Create Text
+    const smallIconText = new PIXI.Text('S', defaultTextStyle);
+    smallIcon.addChild(smallIconText);
+    smallIconText.x = -smallIconText.width / 2;
+    smallIconText.y = -smallIconText.height / 2;
+
     widget.addChild(smallIcon);
 
     // Create Medium Icon:
@@ -924,9 +1043,15 @@ function populateSizeDialog(resources, stage) {
     mediumIcon.interactive = true;
     mediumIcon.buttonMode = true;
     mediumIcon.on('pointerdown', () => {
-        changeSize('medium');
-        sizeDialog.visible = false;
+        selectSize('medium');
     });
+    // Create Text
+    const mediumIconText = new PIXI.Text('M', defaultTextStyle);
+    mediumIcon.addChild(mediumIconText);
+    mediumIconText.x = -mediumIconText.width / 2;
+    mediumIconText.y = -mediumIconText.height / 2;
+    mediumIcon.y = sizeIconY;
+
     widget.addChild(mediumIcon);
 
     // Create Large Icon
@@ -937,11 +1062,62 @@ function populateSizeDialog(resources, stage) {
     largeIcon.interactive = true;
     largeIcon.buttonMode = true;
     largeIcon.on('pointerdown', () => {
-        changeSize('large');
-        sizeDialog.visible = false;
+        selectSize('large');
     });
     largeIcon.x = sizeIconXSeperation;
+    const largeIconText = new PIXI.Text('L', defaultTextStyle);
+    largeIcon.addChild(largeIconText);
+    largeIconText.x = -largeIconText.width / 2;
+    largeIconText.y = -largeIconText.height / 2;
+    largeIcon.y = sizeIconY;
     widget.addChild(largeIcon);
+
+    // Create Text:
+    const title = new PIXI.Text("Choose Size", defaultTextStyle);
+    const textPadding = 20;
+    title.x = textPadding -widgetWidth / 2;
+    title.y = textPadding -widgetHeight / 2;
+    widget.addChild(title);
+
+    // Add Close Button
+    const closeText = new PIXI.Text("x", defaultTextStyle);
+    const closeButtonW = closeText.width + 40;
+    const closeButtonH = closeText.height + 20;
+    const closeButton = new PIXI.Graphics();
+    closeButton.lineStyle(5,0x755800);
+    closeButton.beginFill(0xFFBF00);
+    closeButton.drawRoundedRect( -closeButtonW / 2, -closeButtonH / 2, closeButtonW, closeButtonH, 5);
+    closeButton.endFill();   
+    closeButton.addChild(closeText);
+    closeText.x = -closeText.width / 2;
+    closeText.y = -closeText.height / 2;
+    closeButton.x = sizeIconXSeperation + cell_length_px / 2;
+    closeButton.y = + (widgetHeight / 2) + (closeButtonW / 2) - 5;
+    closeButton.zIndex = -1;
+    sizeDialog.addChild(closeButton);
+
+    // Add Okay Button
+    const okText = new PIXI.Text("o", defaultTextStyle);
+    const okButtonWidth = closeButtonW;
+    const okButtonH = closeButtonH;
+    const okButton = new PIXI.Graphics();
+    okButton.lineStyle(5,0x755800);
+    okButton.beginFill(0xFFBF00);
+    okButton.drawRoundedRect(-okButtonWidth / 2, -okButtonH / 2, okButtonWidth, okButtonH, 5);
+    okButton.endFill();
+    okButton.interactive = true;
+    okButton.buttonMode = true;
+    okButton.addChild(okText);
+    okText.x = - okText.width / 2;
+    okText.y = - okText.height / 2;
+    okButton.x = closeButton.x - closeButton.width;
+    okButton.y = closeButton.y
+    okButton.zIndex = -1;
+    okButton.on('pointerdown', () => {
+        changeSize(selectedSize);
+        sizeDialog.visible = false;
+    });
+    sizeDialog.addChild(okButton);
 }
 
 /**
@@ -957,31 +1133,48 @@ const spriteMap = {};
 // Create Layer for Cells
 const cellLayer = new PIXI.Container();
 cellLayer.name = 'cellLayer';
+cellLayer.zIndex = 0;
 app.stage.addChild(cellLayer);
+
+// Create Control Bar
+const controlBar = new PIXI.Container();
+controlBar.name = 'controlBar';
+controlBar.zIndex = 0;
+app.stage.addChild(controlBar);
+
+// Create Grid BG Container:
+const gridBg = new PIXI.Container();
+gridBg.interactive = true;
+gridBg.name = 'gridBackground';
+gridBg.zIndex = 1;
+app.stage.addChild(gridBg);
 
 // Create Game Over Loss Container:
 const gameOverLoss = new PIXI.Container();
 gameOverLoss.name = 'gameOverLoss';
+gameOverLoss.zIndex = 2;
 app.stage.addChild(gameOverLoss);
 
 // Create Game Over Win Container:
 const gameOverWin = new PIXI.Container();
 gameOverWin.name = 'gameOverWin';
+gameOverWin.zIndex = 2;
 app.stage.addChild(gameOverWin);
-
-// Create Control Bar
-const controlBar = new PIXI.Container();
-controlBar.name = 'controlBar';
-app.stage.addChild(controlBar);
 
 // Create Size Dialog:
 const sizeDialog = new PIXI.Container();
 sizeDialog.name = "sizeDialog";
+sizeDialog.sortableChildren = true;
+sizeDialog.zIndex = 2;
 app.stage.addChild(sizeDialog);
 
 app.loader.load((loader, resources) => {
     // Save resources for use later:
     pixiResources = resources;
+
+    // Populate gridBackground:
+    redrawGridBackground();
+    gridBg.visible = false;
 
     // Populate game over loss screen:
     populateGameOverLossContainer(resources, app.stage);

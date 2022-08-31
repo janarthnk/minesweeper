@@ -55,11 +55,55 @@ Minesweeper task list
 
             commit work + review!
             Size Icon                       Jan 24th 2022
+
 ----------------------- CURRENT -----------------------
             
+            August 29th, 2022!
+                We have about 3 days to complete this project... More like 2...
+                Now what features would I want to consider this complete ???
+                    Choose size
+                    Help box
+                    Game over Dialog
+                    You win Dialog
+
+                Nice to have:
+                    You Win Confetti
+                    Some arms on that clock bro
+                    Intro screen
+
+                
+
             Images To Create / Refine
-             
-                Size Dialog                 
+                Size Dialog
+                    design                  x
+                    wireframe
+                    implement
+                        small label
+                            appearance
+                            implement
+                        dividers 
+                        size labels.
+                        ok impl             
+                        cancel impl
+                        mine icon               x
+                        arrow vert              x
+                        arrow horizontal        x
+                        okay icon               x
+                        cancel icon             x 
+                        Small size Icon         x     
+                        Medium size Icon        x 
+                        Large size Icon         x 
+                        Checkmark on select
+                        highlight on select
+                        button fade on hover
+                        
+
+
+
+
+                        
+
+                Choosing a size after you've won or lost will restart the game.        
                 You Lose Banner             4 hr
                 You win Banner              4 hr
                 Quit Button                 2 hr 
@@ -78,7 +122,9 @@ Minesweeper task list
                 losing animation
                 changing size outputs size somewhere...
                 records
-
+                sound
+                celebration confetti
+                stuff popps out in the tiles and waves...
 
 
             
