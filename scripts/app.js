@@ -26,7 +26,7 @@ let num_mines = sizes[default_size].numMines;
 const cell_length_px = 50;
 const border_thickness_px = 5;
 
-const flagCountTextFontSize = 24; 
+const flagCountTextFontSize = 24;
 const flagCountTextGapPx = 3; // Indicates the seperation in pixels between the bottom edge of the flag count icon and top edge of the flag count text.
 const sideBarIconsVerticalGapPx = 10;
 
@@ -91,7 +91,8 @@ const textureNameToPath = {
     'green_dark': './assets/amber/green_dark.png',
     'green_light': './assets/amber/green_light.png',
     'clock': './assets/amber/clock.png',
-    'size': './assets/amber/size_3.png'
+    'size': './assets/amber/size_3.png',
+    'title': './assets/title.png'
 }
 
 // Create game class:
@@ -128,7 +129,7 @@ app.view.addEventListener('contextmenu', (e) => {
 /**
  * Does the work necessary to change the boards size.
  * @param {*} size - One of the following values 'small', 'medium', 'large'
- * @returns 
+ * @returns
  */
 function changeSize(size) {
     const newDimensions = sizes[size];
@@ -158,6 +159,11 @@ function changeSize(size) {
 
     // Update Application Dimensions
     app.renderer.resize(app_width, app_height);
+
+    // Reposition title:
+    const title = app.stage.getChildByName('title');
+    title.x = app_width / 2;
+    title.y = app_height / 2;
 
     // Redraw grid background:
     redrawGridBackground();
@@ -189,7 +195,7 @@ function changeSize(size) {
     // Change height of control bar:
     const controlBarBg = controlBar.getChildByName('background');
     controlBarBg.height = app_height;
-        
+
     startGame();
 }
 
@@ -210,7 +216,7 @@ function showVictory() {
 function resetCellLayer() {
     const cellLayer = app.stage.getChildByName('cellLayer');
 
-    // Clearing 
+    // Clearing
     cellLayer.visible = false;
 
     // Clear all listeners....
@@ -235,9 +241,9 @@ function showCell(blob) {
     if (blob.flagged) game.numFlagged--;
     blob.flagged = false;
     blob.flagSprite.visible = false;
-    
+
     const cell = blob.clickableSprite;
-    // Cell can no longer be clicked: disable interactivity and click handling  
+    // Cell can no longer be clicked: disable interactivity and click handling
     cell.off('pointerdown', handleCellClick);
     cell.interactive = false;
     cell.buttonMode = false;
@@ -262,16 +268,16 @@ function isOutOfBounds(col, row) {
 function isShown(col, row) {
     // Out of bounds:
     if (isOutOfBounds(col, row)) return false;
-    
+
     // Check if content is visible:
     const blob = getBlobAt(col, row);
-    
+
     return blob.clicked;
 
 }
 function updateCellBorder(blob) {
     // Can't update border for unclicked cell
-    if (!blob.clicked) return; 
+    if (!blob.clicked) return;
 
     const x = blob.column;
     const y = blob.row;
@@ -318,7 +324,7 @@ function neighbors(blob) {
 }
 
 function handleCellLeftClick(blob) {
-    
+
     if (blob.clicked) return; // Already clicked peace out:
     if (blob.flagged) return; // If it's flagged it cannot be clicked
 
@@ -350,7 +356,7 @@ function handleCellLeftClick(blob) {
             const row = coordSet[0];
             const col = coordSet[1];
             const cellBlob = getBlobAt(col, row);
-            showCell(cellBlob); 
+            showCell(cellBlob);
             borderUpdateSet.add(cellBlob);
         });
     }
@@ -359,7 +365,7 @@ function handleCellLeftClick(blob) {
     for (const blob of borderUpdateSet) {
         neighbors(blob).forEach(n => borderUpdateSet.add(n));
     }
-    
+
     // Update Borders:
     for (const blob of borderUpdateSet) updateCellBorder(blob);
 }
@@ -383,7 +389,7 @@ function handleCellClick(event) {
     }
 
     // Determine left or right click:
-    const clickType = event.data.originalEvent.which;    
+    const clickType = event.data.originalEvent.which;
     if (clickType == 1) {
         handleCellLeftClick(blob); // Left Click
     } else if (clickType == 3) {
@@ -405,6 +411,14 @@ function displayGameOver() {
 
     const gameOverLossContainer = app.stage.getChildByName('gameOverLoss');
     gameOverLossContainer.visible = true;
+}
+
+function showTitleScreen(gameEndContainer) {
+    gameEndContainer.visible = false;
+    const title = app.stage.getChildByName('title');
+    const gridBg = app.stage.getChildByName('gridBackground');
+    title.visible = true;
+    gridBg.visible = true;
 }
 
  /**
@@ -441,28 +455,28 @@ function displayGameOver() {
             const texture = (x + y) % 2 === 0 ? resources.light_blue.texture : resources.dark_blue.texture;
 
             const cell = new PIXI.Sprite(texture);
-            
+
             // Add cell to spriteMap
             spriteMap[y][x] = cell;
 
             // Setup the position
             cell.width = cell_length_px;
             cell.height = cell_length_px;
-        
+
             // Rotate around the center
             cell.anchor.x = 0;
             cell.anchor.y = 0;
-        
+
             cell.x = x * cell_length_px;
             cell.y = y * cell_length_px;
-        
+
             // Opt-in to interactivity
             cell.interactive = true;
 
             // Shows hand cursor
             cell.buttonMode = true;
 
-            // Content container has everything necessary to display the cell (eg: number, background, borders): 
+            // Content container has everything necessary to display the cell (eg: number, background, borders):
             const content = new PIXI.Container();
             content.visible = false;
             content.x = x * cell_length_px;
@@ -478,9 +492,9 @@ function displayGameOver() {
                 contentCell = new PIXI.Text(text);
             }
             contentCell.width = cell_length_px;
-            contentCell.height = cell_length_px;                
+            contentCell.height = cell_length_px;
             content.addChild(contentCell);
-            
+
             // Top Border:
             const topBorder = new PIXI.Sprite(resources['border'].texture);
             topBorder.width = cell_length_px - (2 * border_thickness_px);
@@ -635,12 +649,12 @@ function displayGameOver() {
             const flagCell = new PIXI.Sprite(resources['flag' + '_' + suffix].texture);
             flagCell.visible = false;
             flagCell.width = cell_length_px;
-            flagCell.height = cell_length_px;                
+            flagCell.height = cell_length_px;
             flagCell.anchor.x = 0;
             flagCell.anchor.y = 0;
             flagCell.x = x * cell_length_px;
             flagCell.y = y * cell_length_px;
-            
+
             // Save cell to blobMap
             blobMap.set(cell, new SpriteBlob(cell, content, flagCell, y, x));
 
@@ -679,12 +693,14 @@ function populateGameOverWinContainer(resources, stage) {
     const retry = new PIXI.Sprite(resources.retry.texture);
     retry.anchor.x = 0.5;
     retry.anchor.y = 0.5;
-    retry.x = -100;
+    retry.scale.x = 0.5;
+    retry.scale.y = 0.5;
+    retry.x = -65;
     retry.y = 125;
     retry.interactive = true;
     retry.buttonMode = true;
     retry.on('pointerdown', () => {
-        gameOverWin.visible = false; 
+        gameOverWin.visible = false;
         startGame();
     });
     gameOverWin.addChild(retry);
@@ -693,17 +709,45 @@ function populateGameOverWinContainer(resources, stage) {
     const quit = new PIXI.Sprite(resources.quit.texture);
     quit.anchor.x = 0.5;
     quit.anchor.y = 0.5;
+    quit.scale.x = 0.5;
+    quit.scale.y = 0.5;
     quit.x = 100;
     quit.y = 125;
     quit.interactive = true;
     quit.buttonMode = true;
     quit.on('pointerdown', () => {
-        console.log(`show contact screen!`);
-        // todo:
+        showTitleScreen(gameOverWin);
     });
     gameOverWin.addChild(quit);
 }
+function populateTitleContainer() {
+    console.log(`drawing title container`);
+    const title = app.stage.getChildByName('title');
+    if (title == null) {
+        console.error(`Couldn't find title container`);
+        return;
+    }
 
+    const resources = pixiResources;
+
+    const titleMenu = new PIXI.Sprite(resources.title.texture);
+
+    // Center it
+    titleMenu.anchor.set(0.5, 0.5);
+    title.x = app_width / 2;
+    title.y = app_height / 2;
+
+    // Make it disappear on click:
+    titleMenu.interactive = true;
+    titleMenu.buttonMode = true;
+    titleMenu.on('pointerdown', () => {
+        title.visible = false;
+        startGame();
+    });
+
+    title.addChild(titleMenu);
+
+}
 function redrawGridBackground(animateMS = 0) {
 
     const gridBg = app.stage.getChildByName('gridBackground');
@@ -726,11 +770,11 @@ function redrawGridBackground(animateMS = 0) {
             // Setup the position
             cell.width = cell_length_px;
             cell.height = cell_length_px;
-        
+
             // Rotate around the center
             cell.anchor.x = 0;
             cell.anchor.y = 0;
-        
+
             cell.x = x * cell_length_px;
             cell.y = y * cell_length_px;
 
@@ -744,13 +788,13 @@ function redrawGridBackground(animateMS = 0) {
                 }, animateMS * Math.random())
             }
         }
-    }    
+    }
 }
 
 
  /**
  * Creates the 'Game Over Loss' container and all children!
- * @param {*} resources 
+ * @param {*} resources
  */
 function populateGameOverLossContainer(resources, stage) {
     const gameOverLoss = stage.getChildByName('gameOverLoss');
@@ -761,7 +805,8 @@ function populateGameOverLossContainer(resources, stage) {
 
     // Configure Game Over Loss container
     gameOverLoss.visible = false;
-
+    gameOverLoss.x = app_width / 2;
+    gameOverLoss.y = app_height / 2;
 
     // Setup gameOverLoss container:
     const banner = new PIXI.Sprite(resources.game_over_loss_banner.texture);
@@ -776,12 +821,14 @@ function populateGameOverLossContainer(resources, stage) {
     const retry = new PIXI.Sprite(resources.retry.texture);
     retry.anchor.x = 0.5;
     retry.anchor.y = 0.5;
-    retry.x = -100;
+    retry.scale.x = 0.5;
+    retry.scale.y = 0.5;
+    retry.x = -65;
     retry.y = 125;
     retry.interactive = true;
     retry.buttonMode = true;
     retry.on('pointerdown', () => {
-        gameOverLoss.visible = false; 
+        gameOverLoss.visible = false;
         startGame();
     });
     gameOverLoss.addChild(retry);
@@ -790,19 +837,21 @@ function populateGameOverLossContainer(resources, stage) {
     const quit = new PIXI.Sprite(resources.quit.texture);
     quit.anchor.x = 0.5;
     quit.anchor.y = 0.5;
+    quit.scale.x = 0.5;
+    quit.scale.y = 0.5;
     quit.x = 100;
     quit.y = 125;
     quit.interactive = true;
     quit.buttonMode = true;
     quit.on('pointerdown', () => {
-        // todo:
+        showTitleScreen(gameOverLoss);
     });
     gameOverLoss.addChild(quit);
 }
 
 /**
- * 
- * @param {*} resources 
+ *
+ * @param {*} resources
  * @param {*} stage
  */
 function populateControlBar(resources, stage) {
@@ -835,7 +884,7 @@ function populateControlBar(resources, stage) {
     //         background.addChild(cell);
     //     }
     // }
-    
+
     controlBar.addChild(background);
 }
 
@@ -858,7 +907,7 @@ function createAndPositionControlBarContent(resources, stage) {
     timeText.y = cell_length_px;
     clockContainer.addChild(timeText);
 
-    // Subscribe to our timer so we can update every second    
+    // Subscribe to our timer so we can update every second
     timer.subscribe("clock-text", (seconds) => {
         // Format time into "MM:SS":
         const ss = (seconds % 60).toString(10).padStart(2, '0');
@@ -888,7 +937,7 @@ function createAndPositionControlBarContent(resources, stage) {
 
     // Create Difficulty Icon:
     // todo: create texture for size dialog
-    const sizeIcon = new PIXI.Sprite(resources['size'].texture);    
+    const sizeIcon = new PIXI.Sprite(resources['size'].texture);
     sizeIcon.width = cell_length_px;
     sizeIcon.height = cell_length_px;
     sizeIcon.anchor.x = 0.5;
@@ -931,6 +980,7 @@ function createAndPositionControlBarContent(resources, stage) {
 
 function populateSizeDialog(resources, stage) {
     const defaultTextStyle = {fontWeight: "bold", fill: "0x755800"};
+    const sizeIconTextStyle = {fontWeight: "bold", fill: "0xffe28a"};
 
     const sizeDialog = stage.getChildByName('sizeDialog');
     if (sizeDialog == null) {
@@ -957,16 +1007,16 @@ function populateSizeDialog(resources, stage) {
                 console.error(`unhandled size!`);
         }
     }
-    
+
     //Center difficulty dialog:
     sizeDialog.x = app_width / 2;
     sizeDialog.y = app_height / 2;
-    
+
     // Create backdrop for dialog.
     const backdrop = new PIXI.Graphics();
     backdrop.name = 'backdrop';
     backdrop.beginFill(0x000000, 0.3);
-    backdrop.drawRect(-app_width / 2, -app_height / 2, app_width, app_height); // screen size since we want to prevent them from playing the game... 
+    backdrop.drawRect(-app_width / 2, -app_height / 2, app_width, app_height); // screen size since we want to prevent them from playing the game...
     backdrop.endFill();
     backdrop.interactive = true;
     backdrop.buttonMode = true;
@@ -989,7 +1039,7 @@ function populateSizeDialog(resources, stage) {
     widget.endFill();
     widget.interactive = true;
     widget.on('pointerdown', () => {
-        
+
     });
 
     // widget.anchor.x = 0.5;
@@ -997,7 +1047,7 @@ function populateSizeDialog(resources, stage) {
     widget.zIndex = 0;
     sizeDialog.addChild(widget);
 
-    // Create Size Buttons:    
+    // Create Size Buttons:
     const sizeIconWidth = 75;
     const sizeIconHeight = 100;
     const sizeIconXSeperation = sizeIconWidth + 50;
@@ -1009,14 +1059,14 @@ function populateSizeDialog(resources, stage) {
     const highlightW = sizeIconWidth * 1.2;
     const highlightH = sizeIconHeight * 1.2;
     highlight.drawRect(-highlightW / 2, -highlightH / 2, highlightW, highlightH);
-    highlight.x = -sizeIconXSeperation; 
+    highlight.x = -sizeIconXSeperation;
     highlight.y = sizeIconY;
     widget.addChild(highlight);
 
 
     // Create Small Icon:
     const smallIcon = new PIXI.Graphics();
-    smallIcon.beginFill(0x00FF00); // todo: Adjust fill and alpha
+    smallIcon.beginFill(0x66e355); // todo: Adjust fill and alpha
     smallIcon.drawRect(-sizeIconWidth / 2, -sizeIconHeight / 2, sizeIconWidth, sizeIconHeight);
     smallIcon.endFill();
     smallIcon.interactive = true;
@@ -1028,7 +1078,7 @@ function populateSizeDialog(resources, stage) {
     smallIcon.y = sizeIconY;
 
     // Create Text
-    const smallIconText = new PIXI.Text('S', defaultTextStyle);
+    const smallIconText = new PIXI.Text('S', sizeIconTextStyle);
     smallIcon.addChild(smallIconText);
     smallIconText.x = -smallIconText.width / 2;
     smallIconText.y = -smallIconText.height / 2;
@@ -1037,7 +1087,7 @@ function populateSizeDialog(resources, stage) {
 
     // Create Medium Icon:
     const mediumIcon = new PIXI.Graphics();
-    mediumIcon.beginFill(0x0000FF); // todo: Adjust fill and alpha
+    mediumIcon.beginFill(0x00d8ff); // todo: Adjust fill and alpha
     mediumIcon.drawRect(-sizeIconWidth / 2, -sizeIconHeight / 2, sizeIconWidth, sizeIconHeight);
     mediumIcon.endFill();
     mediumIcon.interactive = true;
@@ -1046,7 +1096,7 @@ function populateSizeDialog(resources, stage) {
         selectSize('medium');
     });
     // Create Text
-    const mediumIconText = new PIXI.Text('M', defaultTextStyle);
+    const mediumIconText = new PIXI.Text('M', sizeIconTextStyle);
     mediumIcon.addChild(mediumIconText);
     mediumIconText.x = -mediumIconText.width / 2;
     mediumIconText.y = -mediumIconText.height / 2;
@@ -1056,7 +1106,7 @@ function populateSizeDialog(resources, stage) {
 
     // Create Large Icon
     const largeIcon = new PIXI.Graphics();
-    largeIcon.beginFill(0xFF0000); // todo: Adjust fill and alpha
+    largeIcon.beginFill(0xff5169); // todo: Adjust fill and alpha
     largeIcon.drawRect(-sizeIconWidth / 2, -sizeIconHeight / 2, sizeIconWidth, sizeIconHeight);
     largeIcon.endFill();
     largeIcon.interactive = true;
@@ -1065,7 +1115,7 @@ function populateSizeDialog(resources, stage) {
         selectSize('large');
     });
     largeIcon.x = sizeIconXSeperation;
-    const largeIconText = new PIXI.Text('L', defaultTextStyle);
+    const largeIconText = new PIXI.Text('L', sizeIconTextStyle);
     largeIcon.addChild(largeIconText);
     largeIconText.x = -largeIconText.width / 2;
     largeIconText.y = -largeIconText.height / 2;
@@ -1085,9 +1135,9 @@ function populateSizeDialog(resources, stage) {
     const closeButtonH = closeText.height + 20;
     const closeButton = new PIXI.Graphics();
     closeButton.lineStyle(5,0x755800);
-    closeButton.beginFill(0xFFBF00);
+    closeButton.beginFill(0xffe28a);
     closeButton.drawRoundedRect( -closeButtonW / 2, -closeButtonH / 2, closeButtonW, closeButtonH, 5);
-    closeButton.endFill();   
+    closeButton.endFill();
     closeButton.addChild(closeText);
     closeText.x = -closeText.width / 2;
     closeText.y = -closeText.height / 2;
@@ -1102,7 +1152,7 @@ function populateSizeDialog(resources, stage) {
     const okButtonH = closeButtonH;
     const okButton = new PIXI.Graphics();
     okButton.lineStyle(5,0x755800);
-    okButton.beginFill(0xFFBF00);
+    okButton.beginFill(0xffe28a);
     okButton.drawRoundedRect(-okButtonWidth / 2, -okButtonH / 2, okButtonWidth, okButtonH, 5);
     okButton.endFill();
     okButton.interactive = true;
@@ -1149,6 +1199,12 @@ gridBg.name = 'gridBackground';
 gridBg.zIndex = 1;
 app.stage.addChild(gridBg);
 
+// Create Title Container:
+const titleContainer = new PIXI.Container();
+titleContainer.name = 'title';
+titleContainer.zIndex = 2;
+app.stage.addChild(titleContainer);
+
 // Create Game Over Loss Container:
 const gameOverLoss = new PIXI.Container();
 gameOverLoss.name = 'gameOverLoss';
@@ -1167,6 +1223,7 @@ sizeDialog.name = "sizeDialog";
 sizeDialog.sortableChildren = true;
 sizeDialog.zIndex = 2;
 app.stage.addChild(sizeDialog);
+sizeDialog.visible = false;
 
 app.loader.load((loader, resources) => {
     // Save resources for use later:
@@ -1174,7 +1231,6 @@ app.loader.load((loader, resources) => {
 
     // Populate gridBackground:
     redrawGridBackground();
-    gridBg.visible = false;
 
     // Populate game over loss screen:
     populateGameOverLossContainer(resources, app.stage);
@@ -1184,13 +1240,13 @@ app.loader.load((loader, resources) => {
 
     // Populate control bar
     populateControlBar(resources, app.stage);
-    
+
     // Create and Position Control Bar Content:
     createAndPositionControlBarContent(resources, app.stage);
 
     // Create Size Dialog:
     populateSizeDialog(resources, app.stage);
 
-    // Start the game
-    startGame();
+    // Populate title container:
+    populateTitleContainer();
 });

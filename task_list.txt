@@ -4,10 +4,10 @@ Minesweeper task list
             Remaining Cell Icons            2 hr            1.25 hr
             Water cells                     2 hrs           1 hr
             Flag Sprite                     1 hr            3 hr
-            GITHUB PLS      
+            GITHUB PLS
             Curvy Border                    7 hr
-            
-            
+
+
             add super parent 'field' which everything is added onto.
             side bar                        30m
 
@@ -15,9 +15,9 @@ Minesweeper task list
                 Fixed text width
 
             Flag Counter                    2 hr
-                icon   
+                icon
                 update text...
-            
+
             Positioning of flag text is arbitrary ...
 
 
@@ -25,21 +25,21 @@ Minesweeper task list
             Positioning icons on bar...
                 x Figure out the algorithm...
                 x Figure out what the class does
-                x Code review + commit 
+                x Code review + commit
 
 
 
-            Stop timer on win / loss 
+            Stop timer on win / loss
             Set timer to 0 when restart is hit...
-           
+
             Look through remaining tasks.           Dec 5th
             Take a look at uncommitted work.        Dec 5th 2021
 
-            
-            Address all warnings   
+
+            Address all warnings
             Clicking on difficultyIcon shows/hides the difficultyDialog
 
-            Created small medium large buttons. 
+            Created small medium large buttons.
             Move logic to create size bar into function...
             moved control bar content creation into function!
             started creating function to update size.
@@ -57,23 +57,58 @@ Minesweeper task list
             Size Icon                       Jan 24th 2022
 
 ----------------------- CURRENT -----------------------
-            
+
             August 29th, 2022!
                 We have about 3 days to complete this project... More like 2...
                 Now what features would I want to consider this complete ???
                 x    Choose size
-                    Game over Dialog
-                        retry button
+                x    Game over Dialog
+                        gET colors from our palette:
+                            dark brown: #ffac31
+                            light brown: #ffbf00
+                            border: #755800
+                            light blue: #00d8ff
+                            dark blue: #00bfff
+                            green: #66e355
+                            red: #ff5169
+                        retry button design?
                         quit button
-                    You win Dialog
-                    Refine
+
+                        Button specs:
+                            designed on pixelartmaker
+                            border 2px wide
+                            on save scaled 5x..
+                            light brown letters
+                            border is border
+                            shadow is FFE8A8
+                            backgorund is FFF7DB
+
+                x    You win Banner
+                        design  x
+                        implement
+                            write it out
+                            color the text
+                            create a shadow
+                            color background
+
+                    Refine size dialog if possible...
 
                 Nice to have:
-                    You Win Confetti
-                    Some arms on that clock bro
-                    Intro screen
+                x    Intro screen
+                    x    prevent size dialog from showing up first
+                    x     gridBG appears with title and disappears when it dissapears...
 
-                
+                    x    center it on size change
+                    x    go to it on quit
+                    x    game over not centered...
+                    Some arms on that clock bro
+                    You Win Confetti
+
+                Deadline?
+                    eat around 7...
+                    exercise 6-630...
+                    deadline is around 630?
+
 
             Images To Create / Refine
                 Size Dialog
@@ -83,35 +118,35 @@ Minesweeper task list
                         small label
                             appearance
                             implement
-                        dividers 
+                        dividers
                         size labels.
-                        ok impl             
+                        ok impl
                         cancel impl
                         mine icon               x
                         arrow vert              x
                         arrow horizontal        x
                         okay icon               x
-                        cancel icon             x 
-                        Small size Icon         x     
-                        Medium size Icon        x 
-                        Large size Icon         x 
+                        cancel icon             x
+                        Small size Icon         x
+                        Medium size Icon        x
+                        Large size Icon         x
                         Checkmark on select
                         highlight on select
                         button fade on hover
-                        
 
 
 
 
-                        
 
-                Choosing a size after you've won or lost will restart the game.        
+
+
+                Choosing a size after you've won or lost will restart the game.
                 You Lose Banner             4 hr
                 You win Banner              4 hr
-                Quit Button                 2 hr 
+                Quit Button                 2 hr
                 Retry button                2 hr
-                Surrender Banner            2 hr 
-                Contact Banner              2 hr 
+                Surrender Banner            2 hr
+                Contact Banner              2 hr
                 How to play                 4 hr
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~ WOOOO Finish line, build that telescope mang ~~~~~~~~~~~~~~~~~~~~~~ WOOOOOOOOO
@@ -129,7 +164,7 @@ Minesweeper task list
                 stuff popps out in the tiles and waves...
 
 
-            
+
 
         How long can you work for ?
             On a weekend? 6 hours
@@ -137,13 +172,13 @@ Minesweeper task list
 
         Deadline (for single player)
             September 26th 2021
-        
+
         Reward:
             Celestron - AstroMaster 70AZ Telescope - Refractor Telescope - Fully Coated Glass Optics
-        
+
         Early bird reward: (1 week in advance, on or before Sept 19th 2021)
-            $100 stationary 
-    
+            $100 stationary
+
 
     Sept 16th 2021
         - Wooo github hooray :D
@@ -167,7 +202,7 @@ Minesweeper task list
         - disabled context menu
 
     Sept 1st 2021
-        - figured out that event.data.originalEvent.which 
+        - figured out that event.data.originalEvent.which
             = 3 for right click
             = 1 for left click
 
@@ -183,15 +218,15 @@ Minesweeper task list
         - removed listeners on clear....
         - removee children on clear
         - set background color
-        
+
     August 23rd 2021:
         - moved all cells to a container...
-        - game over on mine click ... 
+        - game over on mine click ...
             X reset the game / board = not necessary can be reset when the game starts again...
             * remove listeners on the cells
             * remove all the cells from the stage
-            
-            * show some notification saying that you lost 
+
+            * show some notification saying that you lost
             * give an option to replay ...
 
 
