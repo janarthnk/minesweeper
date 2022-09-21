@@ -101,6 +101,11 @@ Minesweeper task list
                     x    center it on size change
                     x    go to it on quit
                     x    game over not centered...
+
+
+                Publishing:
+
+                Extras:
                     Some arms on that clock bro
                     You Win Confetti
 
